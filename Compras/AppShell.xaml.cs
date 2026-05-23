@@ -1,10 +1,12 @@
-﻿namespace Compras
+﻿namespace Compras;
+
+public partial class AppShell : Shell
 {
-    public partial class AppShell : Shell
+    public AppShell()
     {
-        public AppShell()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+
+        Routing.RegisterRoute("RegistroPage", typeof(Views.RegistroPage));
+        Routing.RegisterRoute("ProductoDetallePage", typeof(Views.ProductoDetallePage));
     }
 }

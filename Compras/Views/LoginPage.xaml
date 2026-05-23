@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Compras.ViewModels"
+             x:Class="Compras.Views.LoginPage"
+             x:DataType="vm:LoginViewModel"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="#001F3F">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="32" Spacing="24" VerticalOptions="Center">
+
+            <!-- Logo / Título -->
+            <Label Text="TIENDA" FontSize="36" FontAttributes="Bold"
+                   TextColor="#FFD700" HorizontalOptions="Center"/>
+            <Label Text="Departamental" FontSize="16"
+                   TextColor="White" HorizontalOptions="Center"/>
+
+            <!-- Campos -->
+            <Entry Placeholder="Correo electrónico"
+                   Text="{Binding Email}"
+                   Keyboard="Email"
+                   PlaceholderColor="#77777A"
+                   TextColor="White"
+                   BackgroundColor="#0D2B45"
+                   HeightRequest="52"/>
+
+            <Entry Placeholder="Contraseña"
+                   Text="{Binding Password}"
+                   IsPassword="True"
+                   PlaceholderColor="#77777A"
+                   TextColor="White"
+                   BackgroundColor="#0D2B45"
+                   HeightRequest="52"/>
+
+            <!-- Error -->
+            <Label Text="{Binding ErrorMensaje}"
+                   TextColor="#E3122B"
+                   IsVisible="{Binding ErrorMensaje, Converter={StaticResource StringToBoolConverter}}"
+                   HorizontalOptions="Center"/>
+
+            <!-- Botón Login -->
+            <Button Text="INICIAR SESIÓN"
+                    Command="{Binding LoginCommand}"
+                    BackgroundColor="#FFD700"
+                    TextColor="#001F3F"
+                    FontAttributes="Bold"
+                    HeightRequest="52"
+                    CornerRadius="8"/>
+
+            <!-- Ir a Registro -->
+            <Button Text="Crear cuenta"
+                    Command="{Binding IrARegistroCommand}"
+                    BackgroundColor="Transparent"
+                    TextColor="White"
+                    BorderColor="White"
+                    BorderWidth="1"
+                    HeightRequest="52"
+                    CornerRadius="8"/>
+
+            <!-- Invitado -->
+            <Label Text="Continuar como invitado →"
+                   TextColor="#77777A"
+                   HorizontalOptions="Center">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding EntrarComoInvitadoCommand}"/>
+                </Label.GestureRecognizers>
+            </Label>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

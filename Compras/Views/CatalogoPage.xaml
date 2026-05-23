@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Compras.ViewModels"
+             xmlns:models="clr-namespace:Compras.Models"
+             x:Class="Compras.Views.CatalogoPage"
+             x:DataType="vm:CatalogoViewModel"
+             Title="{Binding Titulo}"
+             BackgroundColor="#F2F2F2">
+
+    <Grid RowDefinitions="Auto,Auto,*">
+
+        <!-- Header búsqueda -->
+        <Grid Grid.Row="0" BackgroundColor="#001F3F" Padding="16,12">
+            <Frame BackgroundColor="White" CornerRadius="8" Padding="0" HasShadow="False">
+                <SearchBar Placeholder="Buscar productos..."
+                           Text="{Binding Busqueda}"
+                           BackgroundColor="Transparent"
+                           PlaceholderColor="#77777A"/>
+            </Frame>
+        </Grid>
+
+        <!-- Categorías -->
+        <CollectionView Grid.Row="1"
+                        ItemsSource="{Binding Categorias}"
+                        HeightRequest="50"
+                        Margin="8,8,8,0">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Horizontal" ItemSpacing="8"/>
+            </CollectionView.ItemsLayout>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:CategoriaDto">
+                    <Frame BackgroundColor="#001F3F" CornerRadius="20"
+                           Padding="16,6" HasShadow="False">
+                        <Label Text="{Binding Nombre}" TextColor="White"
+                               FontSize="13" VerticalOptions="Center"/>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- Productos -->
+        <RefreshView Grid.Row="2"
+                     Command="{Binding CargarCommand}"
+                     IsRefreshing="{Binding IsBusy}">
+            <CollectionView ItemsSource="{Binding Productos}"
+                            Margin="8">
+                <CollectionView.ItemsLayout>
+                    <GridItemsLayout Orientation="Vertical"
+                                     Span="2" HorizontalItemSpacing="8"
+                                     VerticalItemSpacing="8"/>
+                </CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:ProductoDto">
+                        <Frame BackgroundColor="White" CornerRadius="12"
+                               Padding="0" HasShadow="True">
+                            <Frame.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CatalogoViewModel}}, Path=VerProductoCommand}"
+                                    CommandParameter="{Binding .}"/>
+                            </Frame.GestureRecognizers>
+                            <VerticalStackLayout>
+                                <Image Source="{Binding ImagenPortada}"
+                                       HeightRequest="140"
+                                       Aspect="AspectFill"/>
+                                <VerticalStackLayout Padding="10,8" Spacing="4">
+                                    <Label Text="{Binding Nombre}"
+                                           FontAttributes="Bold"
+                                           FontSize="13"
+                                           TextColor="#001F3F"
+                                           MaxLines="2"/>
+                                    <Label Text="{Binding Marca}"
+                                           FontSize="11"
+                                           TextColor="#77777A"/>
+                                    <Label Text="{Binding PrecioVenta, StringFormat='${0:N2}'}"
+                                           FontSize="15"
+                                           FontAttributes="Bold"
+                                           TextColor="#001F3F"/>
+                                </VerticalStackLayout>
+                            </VerticalStackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+
+    </Grid>
+</ContentPage>

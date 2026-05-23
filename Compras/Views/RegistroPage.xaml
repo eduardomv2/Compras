@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Compras.Views.RegistroPage"
+             Title="Crear cuenta"
+             BackgroundColor="#001F3F">
+    <ScrollView>
+        <VerticalStackLayout Padding="32" Spacing="16" VerticalOptions="Center">
+            <Label Text="Crear cuenta" FontSize="28" FontAttributes="Bold"
+                   TextColor="White" HorizontalOptions="Center"/>
+            <Entry Placeholder="Nombre" PlaceholderColor="#77777A"
+                   TextColor="White" BackgroundColor="#0D2B45" HeightRequest="52"/>
+            <Entry Placeholder="Apellido Paterno" PlaceholderColor="#77777A"
+                   TextColor="White" BackgroundColor="#0D2B45" HeightRequest="52"/>
+            <Entry Placeholder="Apellido Materno (opcional)" PlaceholderColor="#77777A"
+                   TextColor="White" BackgroundColor="#0D2B45" HeightRequest="52"/>
+            <Entry Placeholder="Correo electrónico" Keyboard="Email"
+                   PlaceholderColor="#77777A" TextColor="White"
+                   BackgroundColor="#0D2B45" HeightRequest="52"/>
+            <Entry Placeholder="Contraseña" IsPassword="True"
+                   PlaceholderColor="#77777A" TextColor="White"
+                   BackgroundColor="#0D2B45" HeightRequest="52"/>
+            <DatePicker Format="dd/MM/yyyy" TextColor="White"
+                        BackgroundColor="#0D2B45" HeightRequest="52"/>
+            <Button Text="REGISTRARME" BackgroundColor="#FFD700"
+                    TextColor="#001F3F" FontAttributes="Bold"
+                    HeightRequest="52" CornerRadius="8"/>
+            <Button Text="Ya tengo cuenta" BackgroundColor="Transparent"
+                    TextColor="White" BorderColor="White" BorderWidth="1"
+                    HeightRequest="52" CornerRadius="8"/>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

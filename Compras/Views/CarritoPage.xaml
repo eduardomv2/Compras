@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Compras.ViewModels"
+             xmlns:models="clr-namespace:Compras.Models"
+             x:Class="Compras.Views.CarritoPage"
+             x:DataType="vm:CarritoViewModel"
+             Title="Mi Carrito"
+             BackgroundColor="#F2F2F2">
+
+    <Grid RowDefinitions="*,Auto">
+
+        <!-- Lista vacía -->
+        <VerticalStackLayout Grid.Row="0" IsVisible="{Binding CarritoVacio}"
+                             VerticalOptions="Center" HorizontalOptions="Center" Spacing="16">
+            <Label Text="🛒" FontSize="64" HorizontalOptions="Center"/>
+            <Label Text="Tu carrito está vacío" FontSize="18"
+                   TextColor="#77777A" HorizontalOptions="Center"/>
+        </VerticalStackLayout>
+
+        <!-- Items -->
+        <CollectionView Grid.Row="0" ItemsSource="{Binding Items}"
+                        IsVisible="{Binding CarritoVacio, Converter={StaticResource InvertBoolConverter}}"
+                        Margin="16,16,16,0">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:CarritoItem">
+                    <Frame BackgroundColor="White" CornerRadius="12"
+                           Padding="12" Margin="0,0,0,8" HasShadow="True">
+                        <Grid ColumnDefinitions="80,*,Auto" ColumnSpacing="12">
+
+                            <Image Grid.Column="0"
+                                   Source="{Binding Producto.ImagenPortada}"
+                                   HeightRequest="80" WidthRequest="80"
+                                   Aspect="AspectFill"/>
+
+                            <VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
+                                <Label Text="{Binding Producto.Nombre}"
+                                       FontAttributes="Bold" FontSize="14"
+                                       TextColor="#001F3F" MaxLines="2"/>
+                                <Label Text="{Binding Producto.Marca}"
+                                       FontSize="12" TextColor="#77777A"/>
+                                <Label Text="{Binding Producto.PrecioVenta, StringFormat='${0:N2}'}"
+                                       FontSize="15" FontAttributes="Bold"
+                                       TextColor="#001F3F"/>
+                            </VerticalStackLayout>
+
+                            <!-- Cantidad -->
+                            <Grid Grid.Column="2" RowDefinitions="Auto,Auto,Auto"
+                                  VerticalOptions="Center" RowSpacing="4">
+                                <Button Grid.Row="0" Text="+"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CarritoViewModel}}, Path=AumentarCommand}"
+                                        CommandParameter="{Binding .}"
+                                        BackgroundColor="#001F3F" TextColor="White"
+                                        WidthRequest="36" HeightRequest="36"
+                                        CornerRadius="18" FontSize="18" Padding="0"/>
+                                <Label Grid.Row="1" Text="{Binding Cantidad}"
+                                       HorizontalOptions="Center"
+                                       FontAttributes="Bold" FontSize="16"/>
+                                <Button Grid.Row="2" Text="-"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CarritoViewModel}}, Path=DisminuirCommand}"
+                                        CommandParameter="{Binding .}"
+                                        BackgroundColor="#77777A" TextColor="White"
+                                        WidthRequest="36" HeightRequest="36"
+                                        CornerRadius="18" FontSize="18" Padding="0"/>
+                            </Grid>
+
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- Resumen + Botón -->
+        <VerticalStackLayout Grid.Row="1" BackgroundColor="White"
+                             Padding="20,16" Spacing="8"
+                             IsVisible="{Binding CarritoVacio, Converter={StaticResource InvertBoolConverter}}">
+            <Grid ColumnDefinitions="*,Auto">
+                <Label Text="Subtotal" TextColor="#77777A"/>
+                <Label Grid.Column="1"
+                       Text="{Binding Subtotal, StringFormat='${0:N2}'}"
+                       TextColor="#001F3F"/>
+            </Grid>
+            <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding TieneDescuento}">
+                <Label Text="Descuento aplicado" TextColor="#E3122B"/>
+                <Label Grid.Column="1"
+                       Text="{Binding DescuentoTotal, StringFormat='-${0:N2}'}"
+                       TextColor="#E3122B"/>
+            </Grid>
+            <BoxView HeightRequest="1" BackgroundColor="#F2F2F2"/>
+            <Grid ColumnDefinitions="*,Auto">
+                <Label Text="Total" FontAttributes="Bold" FontSize="16"/>
+                <Label Grid.Column="1"
+                       Text="{Binding Total, StringFormat='${0:N2}'}"
+                       FontAttributes="Bold" FontSize="18"
+                       TextColor="#001F3F"/>
+            </Grid>
+            <Button Text="FINALIZAR COMPRA ›"
+                    BackgroundColor="#FFD700"
+                    TextColor="#001F3F"
+                    FontAttributes="Bold"
+                    HeightRequest="52"
+                    CornerRadius="8"
+                    Margin="0,8,0,0"/>
+        </VerticalStackLayout>
+
+    </Grid>
+</ContentPage>
