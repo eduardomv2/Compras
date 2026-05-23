@@ -21,8 +21,8 @@
         </ShellContent>
 
         <ShellContent Title="Carrito"
-                      Route="CarritoPage"
-                      ContentTemplate="{DataTemplate views:CarritoPage}">
+              Route="CarritoPage"
+              ContentTemplate="{DataTemplate views:CarritoPage}">
             <ShellContent.Icon>
                 <FontImageSource Glyph="🛒" Color="#001F3F" Size="20"/>
             </ShellContent.Icon>

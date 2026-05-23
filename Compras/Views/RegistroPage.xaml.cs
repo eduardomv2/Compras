@@ -1,9 +1,12 @@
+using Compras.ViewModels;
+
 namespace Compras.Views;
 
 public partial class RegistroPage : ContentPage
 {
-    public RegistroPage()
+    public RegistroPage(RegistroViewModel vm)
     {
         InitializeComponent();
+        BindingContext = vm;
     }
 }

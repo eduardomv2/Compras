@@ -2,6 +2,7 @@
 using Compras.Services;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
+using Compras.Views;
 
 namespace Compras.ViewModels;
 
@@ -17,12 +18,12 @@ public class CatalogoViewModel : BaseViewModel
     {
         _catalogoService = catalogoService;
         _carritoService = carritoService;
-        Titulo = "Catálogo";
+        Titulo = "Catálogo";           
 
         CargarCommand = new Command(async () => await CargarAsync());
         VerProductoCommand = new Command<ProductoDto>(async p =>
             await Shell.Current.GoToAsync(
-                "ProductoDetallePage",
+                nameof(ProductoDetallePage),
                 new Dictionary<string, object> { ["Producto"] = p }));
 
         CargarCommand.Execute(null);

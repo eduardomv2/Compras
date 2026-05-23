@@ -47,6 +47,7 @@ public class CarritoViewModel : BaseViewModel
     public decimal Total => _carritoService.Total;
     public bool TieneDescuento => DescuentoTotal > 0;
     public bool CarritoVacio => !Items.Any();
+    public int TotalItems => _carritoService.TotalItems; 
 
     private void Actualizar()
     {
@@ -59,5 +60,8 @@ public class CarritoViewModel : BaseViewModel
         OnPropertyChanged(nameof(Total));
         OnPropertyChanged(nameof(TieneDescuento));
         OnPropertyChanged(nameof(CarritoVacio));
+        OnPropertyChanged(nameof(TotalItems));
     }
+
+    
 }

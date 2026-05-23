@@ -56,9 +56,10 @@ public class ClientesService
 
             if (response.IsSuccessStatusCode)
                 return (true, string.Empty);
-
             var error = await response.Content.ReadFromJsonAsync<ErrorDto>();
-            return (false, error?.Error ?? "Error al registrar.");
+            var mensaje = error?.Error
+                ?? (error?.Errores != null ? string.Join("\n", error.Errores) : "Error al registrar.");
+            return (false, mensaje);
         }
         catch
         {

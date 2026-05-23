@@ -1,33 +1,73 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Compras.ViewModels"
              x:Class="Compras.Views.RegistroPage"
-             Title="Crear cuenta"
+             x:DataType="vm:RegistroViewModel"
+             Shell.NavBarIsVisible="False"
              BackgroundColor="#001F3F">
+
     <ScrollView>
         <VerticalStackLayout Padding="32" Spacing="16" VerticalOptions="Center">
+
             <Label Text="Crear cuenta" FontSize="28" FontAttributes="Bold"
                    TextColor="White" HorizontalOptions="Center"/>
-            <Entry Placeholder="Nombre" PlaceholderColor="#77777A"
-                   TextColor="White" BackgroundColor="#0D2B45" HeightRequest="52"/>
-            <Entry Placeholder="Apellido Paterno" PlaceholderColor="#77777A"
-                   TextColor="White" BackgroundColor="#0D2B45" HeightRequest="52"/>
-            <Entry Placeholder="Apellido Materno (opcional)" PlaceholderColor="#77777A"
-                   TextColor="White" BackgroundColor="#0D2B45" HeightRequest="52"/>
-            <Entry Placeholder="Correo electrónico" Keyboard="Email"
+
+            <Entry Placeholder="Nombre *" Text="{Binding Nombre}"
                    PlaceholderColor="#77777A" TextColor="White"
                    BackgroundColor="#0D2B45" HeightRequest="52"/>
-            <Entry Placeholder="Contraseña" IsPassword="True"
+
+            <Entry Placeholder="Apellido Paterno *" Text="{Binding ApellidoPaterno}"
                    PlaceholderColor="#77777A" TextColor="White"
                    BackgroundColor="#0D2B45" HeightRequest="52"/>
-            <DatePicker Format="dd/MM/yyyy" TextColor="White"
-                        BackgroundColor="#0D2B45" HeightRequest="52"/>
-            <Button Text="REGISTRARME" BackgroundColor="#FFD700"
-                    TextColor="#001F3F" FontAttributes="Bold"
-                    HeightRequest="52" CornerRadius="8"/>
-            <Button Text="Ya tengo cuenta" BackgroundColor="Transparent"
-                    TextColor="White" BorderColor="White" BorderWidth="1"
-                    HeightRequest="52" CornerRadius="8"/>
+
+            <Entry Placeholder="Apellido Materno" Text="{Binding ApellidoMaterno}"
+                   PlaceholderColor="#77777A" TextColor="White"
+                   BackgroundColor="#0D2B45" HeightRequest="52"/>
+
+            <Entry Placeholder="Correo electrónico *" Text="{Binding Email}"
+                   Keyboard="Email" PlaceholderColor="#77777A"
+                   TextColor="White" BackgroundColor="#0D2B45" HeightRequest="52"/>
+
+            <Entry Placeholder="Contraseña *" Text="{Binding Password}"
+                   IsPassword="True" PlaceholderColor="#77777A"
+                   TextColor="White" BackgroundColor="#0D2B45" HeightRequest="52"/>
+
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Fecha de nacimiento *" TextColor="#77777A" FontSize="13"/>
+                <DatePicker Date="{Binding FechaNacimiento}"
+                            Format="dd/MM/yyyy"
+                            TextColor="White"
+                            BackgroundColor="#0D2B45"
+                            HeightRequest="52"/>
+            </VerticalStackLayout>
+
+            <Label Text="{Binding ErrorMensaje}"
+                   TextColor="#E3122B"
+                   IsVisible="{Binding ErrorMensaje, Converter={StaticResource StringToBoolConverter}}"
+                   HorizontalOptions="Center"/>
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}"
+                               IsVisible="{Binding IsBusy}"
+                               Color="#FFD700"/>
+
+            <Button Text="REGISTRARME"
+                    Command="{Binding RegistrarCommand}"
+                    BackgroundColor="#FFD700"
+                    TextColor="#001F3F"
+                    FontAttributes="Bold"
+                    HeightRequest="52"
+                    CornerRadius="8"/>
+
+            <Button Text="Ya tengo cuenta"
+                    Command="{Binding RegresarCommand}"
+                    BackgroundColor="Transparent"
+                    TextColor="White"
+                    BorderColor="White"
+                    BorderWidth="1"
+                    HeightRequest="52"
+                    CornerRadius="8"/>
+
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
