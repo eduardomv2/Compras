@@ -6,6 +6,7 @@
     <converters:StringToBoolConverter x:Key="StringToBoolConverter"/>
     <converters:InvertBoolConverter x:Key="InvertBoolConverter"/>
     <converters:ElectronicaDescuentoConverter x:Key="ElectronicaDescuentoConverter"/>
+    <converters:DecimalToBoolConverter x:Key="DecimalToBoolConverter"/>
 
         <!-- Note: For Android please see also Platforms\Android\Resources\values\colors.xml -->
 

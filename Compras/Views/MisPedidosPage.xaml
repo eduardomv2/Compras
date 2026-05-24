@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Compras.ViewModels"
+             xmlns:models="clr-namespace:Compras.Models"
+             x:Class="Compras.Views.MisPedidosPage"
+             x:DataType="vm:MisPedidosViewModel"
+             Title="Mis Pedidos"
+             BackgroundColor="#F2F2F2">
+
+    <Grid RowDefinitions="*">
+
+        <!-- Sin pedidos -->
+        <VerticalStackLayout IsVisible="{Binding SinPedidos}"
+                             VerticalOptions="Center"
+                             HorizontalOptions="Center" Spacing="16">
+            <Label Text="📦" FontSize="64" HorizontalOptions="Center"/>
+            <Label Text="No tienes pedidos aún" FontSize="18"
+                   TextColor="#77777A" HorizontalOptions="Center"/>
+        </VerticalStackLayout>
+
+        <!-- Lista de pedidos -->
+        <RefreshView Command="{Binding CargarCommand}"
+                     IsRefreshing="{Binding IsBusy}">
+            <CollectionView ItemsSource="{Binding Ordenes}"
+                            Margin="16">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:OrdenDto">
+                        <Border BackgroundColor="White"
+                                StrokeThickness="0"
+                                StrokeShape="RoundRectangle 12"
+                                Padding="16" Margin="0,0,0,12">
+                            <VerticalStackLayout Spacing="8">
+
+                                <!-- Header -->
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <Label Text="{Binding Id, StringFormat='Pedido #{0}'}"
+                                           FontAttributes="Bold" FontSize="16"
+                                           TextColor="#001F3F"/>
+                                    <Border Grid.Column="1"
+                                            BackgroundColor="#001F3F"
+                                            StrokeThickness="0"
+                                            StrokeShape="RoundRectangle 12"
+                                            Padding="10,4">
+                                        <Label Text="{Binding EstadoOrden.Nombre}"
+                                               TextColor="White" FontSize="12"/>
+                                    </Border>
+                                </Grid>
+
+                                <BoxView HeightRequest="1" BackgroundColor="#F2F2F2"/>
+
+                                <!-- Productos -->
+                                <CollectionView ItemsSource="{Binding Detalles}"
+                                                HeightRequest="80">
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate x:DataType="models:DetalleOrdenDto">
+                                            <Grid ColumnDefinitions="*,Auto" Padding="0,2">
+                                                <Label Text="{Binding NombreProducto}"
+                                                       FontSize="13" TextColor="#444"
+                                                       Grid.Column="0"/>
+                                                <Label Text="{Binding Cantidad, StringFormat='x{0}'}"
+                                                       FontSize="13" TextColor="#77777A"
+                                                       Grid.Column="1"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+                                </CollectionView>
+
+                                <BoxView HeightRequest="1" BackgroundColor="#F2F2F2"/>
+
+                                <!-- Total -->
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <Label Text="Total" TextColor="#77777A"/>
+                                    <Label Grid.Column="1"
+                                           Text="{Binding TotalFinal, StringFormat='${0:N2}'}"
+                                           FontAttributes="Bold" FontSize="16"
+                                           TextColor="#001F3F"/>
+                                </Grid>
+
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+
+    </Grid>
+</ContentPage>

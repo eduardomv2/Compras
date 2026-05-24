@@ -27,6 +27,14 @@
                 <FontImageSource Glyph="🛒" Color="#001F3F" Size="20"/>
             </ShellContent.Icon>
         </ShellContent>
+
+        <ShellContent Title="Mis Pedidos"
+              Route="MisPedidosPage"
+              ContentTemplate="{DataTemplate views:MisPedidosPage}">
+            <ShellContent.Icon>
+                <FontImageSource Glyph="📦" Color="#001F3F" Size="20"/>
+            </ShellContent.Icon>
+        </ShellContent>
     </TabBar>
 
 </Shell>

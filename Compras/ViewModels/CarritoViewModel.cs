@@ -8,7 +8,6 @@ namespace Compras.ViewModels;
 public class CarritoViewModel : BaseViewModel
 {
     private readonly CarritoService _carritoService;
-
     public ObservableCollection<CarritoItem> Items { get; } = [];
 
     public CarritoViewModel(CarritoService carritoService)
@@ -21,18 +20,18 @@ public class CarritoViewModel : BaseViewModel
             _carritoService.Agregar(item.Producto);
             Actualizar();
         });
-
         DisminuirCommand = new Command<CarritoItem>(item =>
         {
             _carritoService.Quitar(item.Producto.Id);
             Actualizar();
         });
-
         EliminarCommand = new Command<CarritoItem>(item =>
         {
             _carritoService.Eliminar(item.Producto.Id);
             Actualizar();
         });
+        FinalizarCompraCommand = new Command(async () =>
+            await Shell.Current.GoToAsync("CheckoutPage"));
 
         _carritoService.CarritoCambio += Actualizar;
         Actualizar();
@@ -41,13 +40,14 @@ public class CarritoViewModel : BaseViewModel
     public ICommand AumentarCommand { get; }
     public ICommand DisminuirCommand { get; }
     public ICommand EliminarCommand { get; }
+    public ICommand FinalizarCompraCommand { get; }
 
     public decimal Subtotal => _carritoService.Subtotal;
     public decimal DescuentoTotal => _carritoService.DescuentoTotal;
     public decimal Total => _carritoService.Total;
     public bool TieneDescuento => DescuentoTotal > 0;
     public bool CarritoVacio => !Items.Any();
-    public int TotalItems => _carritoService.TotalItems; 
+    public int TotalItems => _carritoService.TotalItems;
 
     private void Actualizar()
     {
@@ -62,6 +62,4 @@ public class CarritoViewModel : BaseViewModel
         OnPropertyChanged(nameof(CarritoVacio));
         OnPropertyChanged(nameof(TotalItems));
     }
-
-    
 }

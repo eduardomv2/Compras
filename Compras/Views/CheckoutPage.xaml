@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Compras.ViewModels"
+             x:Class="Compras.Views.CheckoutPage"
+             x:DataType="vm:CheckoutViewModel"
+             Title="Checkout"
+             BackgroundColor="#F2F2F2">
+
+    <Grid RowDefinitions="*,Auto">
+
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Padding="20" Spacing="16">
+
+                <!-- Resumen -->
+                <Border BackgroundColor="White" StrokeThickness="0"
+                        StrokeShape="RoundRectangle 12" Padding="16">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Resumen del pedido"
+                               FontAttributes="Bold" FontSize="16"
+                               TextColor="#001F3F"/>
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Text="Total a pagar" TextColor="#77777A"/>
+                            <Label Grid.Column="1"
+                                   Text="{Binding Total, StringFormat='${0:N2}'}"
+                                   FontAttributes="Bold" FontSize="18"
+                                   TextColor="#001F3F"/>
+                        </Grid>
+                        <Grid ColumnDefinitions="*,Auto"
+                              IsVisible="{Binding Descuento, Converter={StaticResource DecimalToBoolConverter}}">
+                            <Label Text="Descuento aplicado" TextColor="#E3122B"/>
+                            <Label Grid.Column="1"
+                                   Text="{Binding Descuento, StringFormat='-${0:N2}'}"
+                                   TextColor="#E3122B"/>
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Datos de tarjeta -->
+                <Border BackgroundColor="White" StrokeThickness="0"
+                        StrokeShape="RoundRectangle 12" Padding="16">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Datos de tarjeta"
+                               FontAttributes="Bold" FontSize="16"
+                               TextColor="#001F3F"/>
+
+                        <Entry Placeholder="Número de tarjeta"
+                               Text="{Binding NumeroTarjeta}"
+                               Keyboard="Numeric" MaxLength="16"
+                               HeightRequest="52"/>
+
+                        <Entry Placeholder="Nombre del titular"
+                               Text="{Binding NombreTarjeta}"
+                               HeightRequest="52"/>
+
+                        <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                            <Entry Grid.Column="0" Placeholder="MM"
+                                   Text="{Binding MesExpiracion}"
+                                   Keyboard="Numeric" MaxLength="2"
+                                   HeightRequest="52"/>
+                            <Entry Grid.Column="1" Placeholder="AA"
+                                   Text="{Binding AnioExpiracion}"
+                                   Keyboard="Numeric" MaxLength="2"
+                                   HeightRequest="52"/>
+                            <Entry Grid.Column="2" Placeholder="CVV"
+                                   Text="{Binding Cvv}"
+                                   IsPassword="True"
+                                   Keyboard="Numeric" MaxLength="4"
+                                   HeightRequest="52"/>
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- MSI -->
+                <Border BackgroundColor="White" StrokeThickness="0"
+                        StrokeShape="RoundRectangle 12" Padding="16">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Meses sin intereses"
+                               FontAttributes="Bold" FontSize="16"
+                               TextColor="#001F3F"/>
+                        <Picker SelectedIndex="0"
+                                TextColor="#001F3F"
+                                Title="Selecciona">
+                            <Picker.Items>
+                                <x:String>1 mes (contado)</x:String>
+                                <x:String>3 meses</x:String>
+                                <x:String>6 meses</x:String>
+                                <x:String>12 meses</x:String>
+                            </Picker.Items>
+                        </Picker>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Error -->
+                <Label Text="{Binding ErrorMensaje}"
+                       TextColor="#E3122B"
+                       IsVisible="{Binding ErrorMensaje, Converter={StaticResource StringToBoolConverter}}"
+                       HorizontalOptions="Center"/>
+
+                <ActivityIndicator IsRunning="{Binding IsBusy}"
+                                   IsVisible="{Binding IsBusy}"
+                                   Color="#001F3F"/>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Botón pagar -->
+        <Button Grid.Row="1"
+                Text="PAGAR AHORA"
+                Command="{Binding PagarCommand}"
+                BackgroundColor="#FFD700"
+                TextColor="#001F3F"
+                FontAttributes="Bold"
+                HeightRequest="56"
+                CornerRadius="0"
+                Margin="0"/>
+
+    </Grid>
+</ContentPage>

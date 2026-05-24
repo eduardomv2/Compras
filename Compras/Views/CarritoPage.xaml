@@ -100,7 +100,8 @@
                     FontAttributes="Bold"
                     HeightRequest="52"
                     CornerRadius="8"
-                    Margin="0,8,0,0"/>
+                    Margin="0,8,0,0"
+                    Command="{Binding FinalizarCompraCommand}"/>
         </VerticalStackLayout>
 
     </Grid>

@@ -37,28 +37,32 @@ public static class MauiProgram
                 HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
         });
 
-        // ── Services ──────────────────────────────────────────────
+        // Services
         builder.Services.AddSingleton<SesionService>();
         builder.Services.AddSingleton<CarritoService>();
         builder.Services.AddTransient<CatalogoService>();
         builder.Services.AddTransient<ClientesService>();
+        builder.Services.AddTransient<PagosService>();
+        builder.Services.AddTransient<OrdenesService>();
 
-        // ── ViewModels ─────────────────────────────────────────────
+        // ViewModels 
         builder.Services.AddTransient<LoginViewModel>();
         builder.Services.AddTransient<CatalogoViewModel>();
         builder.Services.AddTransient<CarritoViewModel>();
         builder.Services.AddTransient<ProductoDetalleViewModel>();
         builder.Services.AddTransient<RegistroViewModel>();
+        builder.Services.AddTransient<CheckoutViewModel>();
+        builder.Services.AddTransient<MisPedidosViewModel>();
 
 
-        // dentro del método:
+        // Vistas
         builder.Services.AddTransient<LoginPage>();
         builder.Services.AddTransient<CatalogoPage>();
         builder.Services.AddTransient<CarritoPage>();
         builder.Services.AddTransient<ProductoDetallePage>();
-        builder.Services.AddTransient<RegistroPage>();
-
-
+        builder.Services.AddTransient<RegistroPage>();          
+        builder.Services.AddTransient<CheckoutPage>();    
+        builder.Services.AddTransient<MisPedidosPage>();
 
 #if DEBUG
         builder.Logging.AddDebug();
