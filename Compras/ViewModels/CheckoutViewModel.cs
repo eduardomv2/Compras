@@ -9,21 +9,23 @@ public class CheckoutViewModel : BaseViewModel
     private readonly CarritoService _carritoService;
     private readonly SesionService _sesionService;
     private readonly PagosService _pagosService;
+    private readonly OrdenesService _ordenesService;
 
     public CheckoutViewModel(
         CarritoService carritoService,
         SesionService sesionService,
-        PagosService pagosService)
+        PagosService pagosService,
+        OrdenesService ordenesService)
     {
         _carritoService = carritoService;
         _sesionService = sesionService;
         _pagosService = pagosService;
+        _ordenesService = ordenesService;
         Titulo = "Checkout";
 
         PagarCommand = new Command(async () => await PagarAsync());
     }
 
-    // Datos de tarjeta
     private string _numeroTarjeta = string.Empty;
     public string NumeroTarjeta
     {
@@ -75,6 +77,7 @@ public class CheckoutViewModel : BaseViewModel
 
     public decimal Total => _carritoService.Total;
     public decimal Descuento => _carritoService.DescuentoTotal;
+    public decimal Subtotal => _carritoService.Subtotal;
 
     public ICommand PagarCommand { get; }
 
@@ -95,22 +98,43 @@ public class CheckoutViewModel : BaseViewModel
         IsBusy = true;
         ErrorMensaje = string.Empty;
 
-        var (exito, error) = await _pagosService.ProcesarPagoAsync(
-            _sesionService.UsuarioActual!.Id,
+        var usuario = _sesionService.UsuarioActual!;
+
+        // 1. Crear la orden
+        var (ordenExito, idOrden, ordenError) = await _ordenesService.CrearOrdenAsync(
+            usuario.Id,
+            idDireccionEnvio: 1, // temporal
+            Subtotal,
+            Descuento,
+            Total,
+            _carritoService.Items.ToList());
+
+        if (!ordenExito)
+        {
+            ErrorMensaje = ordenError;
+            IsBusy = false;
+            return;
+        }
+
+        // 2. Procesar el pago
+        var (pagoExito, pagoError) = await _pagosService.ProcesarPagoAsync(
+            usuario.Id,
             NumeroTarjeta, NombreTarjeta,
             MesExpiracion, AnioExpiracion, Cvv,
-            Total, MesesSinIntereses);
+            Total, MesesSinIntereses,
+            idOrden);
 
-        if (exito)
+        if (pagoExito)
         {
             _carritoService.Limpiar();
             await Shell.Current.DisplayAlert(
-                "¡Pago exitoso!", "Tu pedido ha sido procesado.", "OK");
-            await Shell.Current.GoToAsync("//CatalogoPage");
+                "¡Pago exitoso!",
+                $"Tu pedido #{idOrden} ha sido procesado.", "OK");   
+            await Shell.Current.GoToAsync("//MisPedidosPage");
         }
         else
         {
-            ErrorMensaje = error;
+            ErrorMensaje = pagoError;
         }
 
         IsBusy = false;

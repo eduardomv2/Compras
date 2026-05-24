@@ -44,6 +44,7 @@ public static class MauiProgram
         builder.Services.AddTransient<ClientesService>();
         builder.Services.AddTransient<PagosService>();
         builder.Services.AddTransient<OrdenesService>();
+        builder.Services.AddTransient<CheckoutViewModel>();
 
         // ViewModels 
         builder.Services.AddTransient<LoginViewModel>();

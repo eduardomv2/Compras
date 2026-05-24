@@ -46,4 +46,9 @@ public class MisPedidosViewModel : BaseViewModel
         SinPedidos = !Ordenes.Any();
         IsBusy = false;
     }
+
+    public async Task RecargarAsync()
+    {
+        await CargarAsync();
+    }
 }
