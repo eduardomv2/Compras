@@ -44,7 +44,8 @@ public static class MauiProgram
         builder.Services.AddTransient<ClientesService>();
         builder.Services.AddTransient<PagosService>();
         builder.Services.AddTransient<OrdenesService>();
-        builder.Services.AddTransient<CheckoutViewModel>();
+        builder.Services.AddTransient<EnviosService>();
+
 
         // ViewModels 
         builder.Services.AddTransient<LoginViewModel>();
@@ -54,8 +55,8 @@ public static class MauiProgram
         builder.Services.AddTransient<RegistroViewModel>();
         builder.Services.AddTransient<CheckoutViewModel>();
         builder.Services.AddTransient<MisPedidosViewModel>();
-
-
+        builder.Services.AddTransient<CheckoutViewModel>();
+        builder.Services.AddTransient<RastreoViewModel>();
         // Vistas
         builder.Services.AddTransient<LoginPage>();
         builder.Services.AddTransient<CatalogoPage>();
@@ -64,6 +65,8 @@ public static class MauiProgram
         builder.Services.AddTransient<RegistroPage>();          
         builder.Services.AddTransient<CheckoutPage>();    
         builder.Services.AddTransient<MisPedidosPage>();
+        builder.Services.AddTransient<RastreoPage>();
+
 
 #if DEBUG
         builder.Logging.AddDebug();

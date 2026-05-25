@@ -18,4 +18,7 @@ public partial class MisPedidosPage : ContentPage
         base.OnAppearing();
         await _vm.RecargarAsync();
     }
+
+
+
 }

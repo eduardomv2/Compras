@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Compras.ViewModels"
+             xmlns:models="clr-namespace:Compras.Models"
+             x:Class="Compras.Views.RastreoPage"
+             x:DataType="vm:RastreoViewModel"
+             Title="Rastreo de pedido"
+             BackgroundColor="#F2F2F2">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="16">
+
+            <!-- Sin envío -->
+            <VerticalStackLayout IsVisible="{Binding SinEnvio}"
+                                 VerticalOptions="Center"
+                                 HorizontalOptions="Center"
+                                 Spacing="16" Margin="0,80,0,0">
+                <Label Text="🚚" FontSize="64" HorizontalOptions="Center"/>
+                <Label Text="Envío aún no generado"
+                       FontSize="18" TextColor="#77777A"
+                       HorizontalOptions="Center"/>
+                <Label Text="Tu pedido está siendo preparado"
+                       FontSize="14" TextColor="#77777A"
+                       HorizontalOptions="Center"/>
+            </VerticalStackLayout>
+
+            <!-- Info del envío -->
+            <Border IsVisible="{Binding SinEnvio, Converter={StaticResource InvertBoolConverter}}"
+                    BackgroundColor="White" StrokeThickness="0"
+                    StrokeShape="RoundRectangle 12" Padding="16">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Estado del envío"
+                           FontAttributes="Bold" FontSize="16"
+                           TextColor="#001F3F"/>
+                    <Label Text="{Binding Envio.EstadoActual}"
+                           FontSize="20" FontAttributes="Bold"
+                           TextColor="#FFD700"/>
+                    <Label Text="{Binding Envio.GuiaPaqueteria, StringFormat='Guía: {0}'}"
+                           FontSize="13" TextColor="#77777A"/>
+                    <Label Text="{Binding Envio.NombreRepartidor, StringFormat='Repartidor: {0}'}"
+                           FontSize="13" TextColor="#77777A"/>
+                    <Label Text="{Binding Envio.TelefonoRepartidor, StringFormat='Tel: {0}'}"
+                           FontSize="13" TextColor="#77777A"
+                           IsVisible="{Binding Envio.TelefonoRepartidor, Converter={StaticResource StringToBoolConverter}}"/>
+                    <Label Text="Dirección de entrega:" 
+                           FontSize="12" TextColor="#77777A" FontAttributes="Bold"/>
+                    <Label Text="{Binding Envio.DireccionSnapshot}"
+                           FontSize="13" TextColor="#77777A"/>
+
+                    <!-- Fecha estimada de entrega -->
+                    <VerticalStackLayout Spacing="2">
+                        <Label Text="Fecha estimada de entrega"
+                   FontSize="12" TextColor="#77777A" FontAttributes="Bold"/>
+                        <Label Text="{Binding FechaEntregaMinima}"
+                   FontSize="14" TextColor="#001F3F" FontAttributes="Bold"/>
+                        <Label Text="{Binding FechaEntregaMaxima}"
+                   FontSize="13" TextColor="#77777A"/>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <Button Text="↻ Actualizar"
+                BackgroundColor="#001F3F"
+                TextColor="White"
+                CornerRadius="8"
+                HeightRequest="40"
+                FontSize="13"
+                Command="{Binding RefreshCommand}"/>
+            
+            <!-- Historial -->
+            <Border IsVisible="{Binding SinEnvio, Converter={StaticResource InvertBoolConverter}}"
+                    BackgroundColor="White" StrokeThickness="0"
+                    StrokeShape="RoundRectangle 12" Padding="16">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Historial de rastreo"
+                           FontAttributes="Bold" FontSize="16"
+                           TextColor="#001F3F"/>
+                    <CollectionView ItemsSource="{Binding Historial}">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:RastreoDto">
+                                <Grid ColumnDefinitions="Auto,*"
+                                      ColumnSpacing="12" Margin="0,4">
+                                    <Ellipse Grid.Column="0"
+                                             Fill="#001F3F"
+                                             WidthRequest="12"
+                                             HeightRequest="12"
+                                             VerticalOptions="Start"
+                                             Margin="0,4,0,0"/>
+                                    <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                        <Label Text="{Binding Estado}"
+                                               FontAttributes="Bold"
+                                               TextColor="#001F3F" FontSize="14"/>
+                                        <Label Text="{Binding Nota}"
+                                               TextColor="#77777A" FontSize="12"/>
+                                        <Label Text="{Binding FechaEvento, Converter={StaticResource UtcToLocalConverter}}"
+                                               TextColor="#77777A" FontSize="11"/>
+                                     </VerticalStackLayout>
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

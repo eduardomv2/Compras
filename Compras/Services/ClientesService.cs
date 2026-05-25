@@ -66,6 +66,19 @@ public class ClientesService
             return (false, "No se pudo conectar al servidor.");
         }
     }
+
+    public async Task<DireccionDto?> GetDireccionPrincipalAsync(int idUsuario)
+    {
+        try
+        {
+            return await _http.GetFromJsonAsync<DireccionDto>(
+                $"/api/clientes/{idUsuario}/direccion-principal");
+        }
+        catch
+        {
+            return null;
+        }
+    }
 }
 
 public record ErrorDto(string? Error, string[]? Errores);

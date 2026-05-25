@@ -76,7 +76,14 @@
                                            FontAttributes="Bold" FontSize="16"
                                            TextColor="#001F3F"/>
                                 </Grid>
-
+                                <Button Text="Rastrear"
+                                        BackgroundColor="#001F3F"
+                                        TextColor="White"
+                                        CornerRadius="8"
+                                        HeightRequest="36"
+                                        FontSize="13"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MisPedidosViewModel}}, Path=VerRastreoCommand}"
+                                        CommandParameter="{Binding .}"/>
                             </VerticalStackLayout>
                         </Border>
                     </DataTemplate>

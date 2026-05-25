@@ -2,6 +2,7 @@
 using Compras.Services;
 using System.Windows.Input;
 
+
 namespace Compras.ViewModels;
 
 public class CheckoutViewModel : BaseViewModel
@@ -10,19 +11,24 @@ public class CheckoutViewModel : BaseViewModel
     private readonly SesionService _sesionService;
     private readonly PagosService _pagosService;
     private readonly OrdenesService _ordenesService;
+    private readonly EnviosService _enviosService;
+    private readonly ClientesService _clientesService;
 
     public CheckoutViewModel(
         CarritoService carritoService,
         SesionService sesionService,
         PagosService pagosService,
-        OrdenesService ordenesService)
+        OrdenesService ordenesService,
+        EnviosService enviosService,
+        ClientesService clientesService)
     {
         _carritoService = carritoService;
         _sesionService = sesionService;
         _pagosService = pagosService;
         _ordenesService = ordenesService;
+        _enviosService = enviosService;
+        _clientesService = clientesService;
         Titulo = "Checkout";
-
         PagarCommand = new Command(async () => await PagarAsync());
     }
 
@@ -126,15 +132,24 @@ public class CheckoutViewModel : BaseViewModel
 
         if (pagoExito)
         {
+            // Obtener dirección del usuario
+            var direccion = await _clientesService.GetDireccionPrincipalAsync(usuario.Id);
+            var direccionSnapshot = direccion?.DireccionCompleta
+                ?? "Dirección no registrada";
+
+            var envioCreado = await _enviosService.CrearEnvioAsync(
+                idOrden,
+                direccionSnapshot,
+                "Repartidor asignado",
+                DateTime.UtcNow.AddDays(3));
+
+            Console.WriteLine($"Envío creado: {envioCreado}, IdOrden: {idOrden}");
+
             _carritoService.Limpiar();
             await Shell.Current.DisplayAlert(
                 "¡Pago exitoso!",
-                $"Tu pedido #{idOrden} ha sido procesado.", "OK");   
+                $"Tu pedido #{idOrden} ha sido procesado.", "OK");
             await Shell.Current.GoToAsync("//MisPedidosPage");
-        }
-        else
-        {
-            ErrorMensaje = pagoError;
         }
 
         IsBusy = false;

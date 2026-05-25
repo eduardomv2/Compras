@@ -18,11 +18,17 @@ public class MisPedidosViewModel : BaseViewModel
         _sesionService = sesionService;
         Titulo = "Mis Pedidos";
 
+        VerRastreoCommand = new Command<OrdenDto>(async orden =>
+            await Shell.Current.GoToAsync(
+                "RastreoPage",
+                new Dictionary<string, object> { ["IdOrden"] = orden.Id }));
+
         CargarCommand = new Command(async () => await CargarAsync());
         CargarCommand.Execute(null);
     }
 
     public Command CargarCommand { get; }
+    public ICommand VerRastreoCommand { get; }
 
     private bool _sinPedidos;
     public bool SinPedidos
