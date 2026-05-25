@@ -61,8 +61,8 @@
 
                     <!-- Stock -->
                     <HorizontalStackLayout Spacing="6">
-                        <Label Text="●" TextColor="#2ECC71" FontSize="12"/>
-                        <Label Text="{Binding Producto.Stock, StringFormat='{0} disponibles'}"
+                        <Label Text="●" TextColor="{Binding ColorStock}" FontSize="12"/>
+                        <Label Text="{Binding TextoStock}"
                                FontSize="13" TextColor="#77777A"/>
                     </HorizontalStackLayout>
 
@@ -84,15 +84,18 @@
             <Button Grid.Column="0"
                     Text="AÑADIR AL CARRITO"
                     Command="{Binding AgregarAlCarritoCommand}"
-                    BackgroundColor="#001F3F"
+                    IsEnabled="{Binding HayStock}"
+                    BackgroundColor="{Binding HayStock, Converter={StaticResource BoolToColorConverter}}"
                     TextColor="White"
                     FontAttributes="Bold"
                     HeightRequest="52"
                     CornerRadius="8"/>
             <Button Grid.Column="1"
                     Text="COMPRAR AHORA"
-                    BackgroundColor="#FFD700"
-                    TextColor="#001F3F"
+                    Command="{Binding ComprarAhoraCommand}"
+                    IsEnabled="{Binding HayStock}"
+                    BackgroundColor="{Binding HayStock, Converter={StaticResource BoolToColorConverter}}"
+                    TextColor="White"
                     FontAttributes="Bold"
                     HeightRequest="52"
                     CornerRadius="8"/>

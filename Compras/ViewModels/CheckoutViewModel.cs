@@ -13,6 +13,7 @@ public class CheckoutViewModel : BaseViewModel
     private readonly OrdenesService _ordenesService;
     private readonly EnviosService _enviosService;
     private readonly ClientesService _clientesService;
+    private readonly CatalogoService _catalogoService;
 
     public CheckoutViewModel(
         CarritoService carritoService,
@@ -20,7 +21,8 @@ public class CheckoutViewModel : BaseViewModel
         PagosService pagosService,
         OrdenesService ordenesService,
         EnviosService enviosService,
-        ClientesService clientesService)
+        ClientesService clientesService,
+        CatalogoService catalogoService)
     {
         _carritoService = carritoService;
         _sesionService = sesionService;
@@ -28,6 +30,7 @@ public class CheckoutViewModel : BaseViewModel
         _ordenesService = ordenesService;
         _enviosService = enviosService;
         _clientesService = clientesService;
+        _catalogoService = catalogoService;
         Titulo = "Checkout";
         PagarCommand = new Command(async () => await PagarAsync());
     }
@@ -132,6 +135,13 @@ public class CheckoutViewModel : BaseViewModel
 
         if (pagoExito)
         {
+            // Descontar stock de cada producto
+            foreach (var item in _carritoService.Items.ToList())
+            {
+                await _catalogoService.DescontarStockAsync(
+                    item.Producto.Id, item.Cantidad);
+            }
+
             // Obtener dirección del usuario
             var direccion = await _clientesService.GetDireccionPrincipalAsync(usuario.Id);
             var direccionSnapshot = direccion?.DireccionCompleta
@@ -142,8 +152,6 @@ public class CheckoutViewModel : BaseViewModel
                 direccionSnapshot,
                 "Repartidor asignado",
                 DateTime.UtcNow.AddDays(3));
-
-            Console.WriteLine($"Envío creado: {envioCreado}, IdOrden: {idOrden}");
 
             _carritoService.Limpiar();
             await Shell.Current.DisplayAlert(

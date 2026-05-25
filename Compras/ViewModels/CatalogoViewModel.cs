@@ -79,4 +79,9 @@ public class CatalogoViewModel : BaseViewModel
         foreach (var p in filtrados)
             Productos.Add(p);
     }
+
+    public async Task RecargarAsync()
+    {
+        await CargarAsync();
+    }
 }

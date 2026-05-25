@@ -52,4 +52,19 @@ public class CatalogoService
             return [];
         }
     }
+
+    public async Task<bool> DescontarStockAsync(int idProducto, int cantidad)
+    {
+        try
+        {
+            var dto = new { Cantidad = cantidad };
+            var response = await _http.PatchAsJsonAsync(
+                $"/api/catalogo/productos/{idProducto}/stock", dto);
+            return response.IsSuccessStatusCode;
+        }
+        catch
+        {
+            return false;
+        }
+    }
 }
