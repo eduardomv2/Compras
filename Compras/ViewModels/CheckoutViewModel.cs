@@ -107,6 +107,18 @@ public class CheckoutViewModel : BaseViewModel
         IsBusy = true;
         ErrorMensaje = string.Empty;
 
+        // Verificar stock antes de pagar
+        foreach (var item in _carritoService.Items.ToList())
+        {
+            var producto = await _catalogoService.GetProductoAsync(item.Producto.Id);
+            if (producto is null || producto.Stock < item.Cantidad)
+            {
+                ErrorMensaje = $"Stock insuficiente para {item.Producto.Nombre}.";
+                IsBusy = false;
+                return;
+            }
+        }
+
         var usuario = _sesionService.UsuarioActual!;
 
         // 1. Crear la orden

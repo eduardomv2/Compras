@@ -73,7 +73,7 @@ public class CatalogoViewModel : BaseViewModel
             ? _todosLosProductos
             : _todosLosProductos.Where(p =>
                 p.Nombre.Contains(Busqueda, StringComparison.OrdinalIgnoreCase) ||
-                p.Categoria.Contains(Busqueda, StringComparison.OrdinalIgnoreCase));
+                p.Categoria.Contains(Busqueda, StringComparison.OrdinalIgnoreCase) == true);
 
         Productos.Clear();
         foreach (var p in filtrados)
