@@ -1,9 +1,30 @@
-﻿namespace Compras.Models;
+﻿using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
-public class CarritoItem
+namespace Compras.Models;
+
+public class CarritoItem : INotifyPropertyChanged
 {
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    protected void OnPropertyChanged([CallerMemberName] string? name = null)
+        => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+
     public ProductoDto Producto { get; set; } = null!;
-    public int Cantidad { get; set; } = 1;
+
+    private int _cantidad = 1;
+    public int Cantidad
+    {
+        get => _cantidad;
+        set
+        {
+            _cantidad = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(Subtotal));
+            OnPropertyChanged(nameof(Descuento));
+            OnPropertyChanged(nameof(Total));
+        }
+    }
 
     public decimal Subtotal => Producto.PrecioVenta * Cantidad;
 

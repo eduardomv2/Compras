@@ -45,7 +45,7 @@
                             </VerticalStackLayout>
 
                             <!-- Cantidad -->
-                            <Grid Grid.Column="2" RowDefinitions="Auto,Auto,Auto"
+                            <Grid Grid.Column="2" RowDefinitions="Auto,Auto,Auto,Auto"
                                   VerticalOptions="Center" RowSpacing="4">
                                 <Button Grid.Row="0" Text="+"
                                         Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CarritoViewModel}}, Path=AumentarCommand}"
@@ -61,7 +61,14 @@
                                         CommandParameter="{Binding .}"
                                         BackgroundColor="#77777A" TextColor="White"
                                         WidthRequest="36" HeightRequest="36"
-                                        CornerRadius="18" FontSize="18" Padding="0"/>
+                                        CornerRadius="18" FontSize="18" Padding="0"
+                                        IsEnabled="{Binding Cantidad, Converter={StaticResource MayorQueUnoConverter}}"/>
+                                <Button Grid.Row="3" Text="🗑"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CarritoViewModel}}, Path=EliminarCommand}"
+                                        CommandParameter="{Binding .}"
+                                        BackgroundColor="#E3122B" TextColor="White"
+                                        WidthRequest="36" HeightRequest="36"
+                                        CornerRadius="18" FontSize="14" Padding="0"/>
                             </Grid>
 
                         </Grid>
