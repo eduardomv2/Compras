@@ -15,8 +15,12 @@ public class LoginViewModel : BaseViewModel
         Titulo = "Iniciar Sesión";
 
         LoginCommand = new Command(async () => await LoginAsync());
+
         IrARegistroCommand = new Command(async () =>
             await Shell.Current.GoToAsync("RegistroPage"));
+
+        EntrarComoInvitadoCommand = new Command(async () =>
+            await Shell.Current.GoToAsync("//CatalogoPageInvitado"));
     }
 
     private string _email = string.Empty;
@@ -42,6 +46,7 @@ public class LoginViewModel : BaseViewModel
 
     public ICommand LoginCommand { get; }
     public ICommand IrARegistroCommand { get; }
+    public ICommand EntrarComoInvitadoCommand { get; }
 
     private async Task LoginAsync()
     {

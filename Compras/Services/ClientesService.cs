@@ -37,7 +37,8 @@ public class ClientesService
 
     public async Task<(bool Exito, string Error)> RegistrarAsync(
         string nombre, string apellidoPaterno, string? apellidoMaterno,
-        string email, string password, DateOnly fechaNacimiento)
+        string email, string password, DateOnly fechaNacimiento,
+        int idCiudad, string calleNumero, string colonia, string codigoPostal)
     {
         try
         {
@@ -48,14 +49,21 @@ public class ClientesService
                 ApellidoMaterno = apellidoMaterno,
                 Email = email,
                 Password = password,
-                FechaNacimiento = fechaNacimiento
+                FechaNacimiento = fechaNacimiento,
+                Direccion = new
+                {
+                    IdCiudad = idCiudad,
+                    CalleNumero = calleNumero,
+                    Colonia = colonia,
+                    CodigoPostal = codigoPostal
+                }
             };
 
-            var response = await _http.PostAsJsonAsync(
-                "/api/clientes/registro", dto);
+            var response = await _http.PostAsJsonAsync("/api/clientes/registro", dto);
 
             if (response.IsSuccessStatusCode)
                 return (true, string.Empty);
+
             var error = await response.Content.ReadFromJsonAsync<ErrorDto>();
             var mensaje = error?.Error
                 ?? (error?.Errores != null ? string.Join("\n", error.Errores) : "Error al registrar.");

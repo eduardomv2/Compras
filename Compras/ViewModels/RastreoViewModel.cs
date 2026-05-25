@@ -9,6 +9,7 @@ namespace Compras.ViewModels;
 public class RastreoViewModel : BaseViewModel
 {
     private readonly EnviosService _enviosService;
+
     public ObservableCollection<RastreoDto> Historial { get; } = [];
 
     public string FechaEntregaMinima => Envio is null ? string.Empty

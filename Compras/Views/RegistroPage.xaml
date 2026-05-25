@@ -13,60 +13,110 @@
             <Label Text="Crear cuenta" FontSize="28" FontAttributes="Bold"
                    TextColor="White" HorizontalOptions="Center"/>
 
-            <Entry Placeholder="Nombre *" Text="{Binding Nombre}"
-                   PlaceholderColor="#77777A" TextColor="White"
-                   BackgroundColor="#0D2B45" HeightRequest="52"/>
+            <!-- PASO 1 -->
+            <VerticalStackLayout IsVisible="{Binding EnPaso1}" Spacing="12">
 
-            <Entry Placeholder="Apellido Paterno *" Text="{Binding ApellidoPaterno}"
-                   PlaceholderColor="#77777A" TextColor="White"
-                   BackgroundColor="#0D2B45" HeightRequest="52"/>
+                <Label Text="Paso 1 de 2 — Datos personales"
+                       TextColor="#77777A" FontSize="13"
+                       HorizontalOptions="Center"/>
 
-            <Entry Placeholder="Apellido Materno" Text="{Binding ApellidoMaterno}"
-                   PlaceholderColor="#77777A" TextColor="White"
-                   BackgroundColor="#0D2B45" HeightRequest="52"/>
+                <Entry Placeholder="Nombre *" Text="{Binding Nombre}"
+                       PlaceholderColor="#77777A" TextColor="White"
+                       BackgroundColor="#0D2B45" HeightRequest="52"/>
 
-            <Entry Placeholder="Correo electrónico *" Text="{Binding Email}"
-                   Keyboard="Email" PlaceholderColor="#77777A"
-                   TextColor="White" BackgroundColor="#0D2B45" HeightRequest="52"/>
+                <Entry Placeholder="Apellido Paterno *" Text="{Binding ApellidoPaterno}"
+                       PlaceholderColor="#77777A" TextColor="White"
+                       BackgroundColor="#0D2B45" HeightRequest="52"/>
 
-            <Entry Placeholder="Contraseña *" Text="{Binding Password}"
-                   IsPassword="True" PlaceholderColor="#77777A"
-                   TextColor="White" BackgroundColor="#0D2B45" HeightRequest="52"/>
+                <Entry Placeholder="Apellido Materno" Text="{Binding ApellidoMaterno}"
+                       PlaceholderColor="#77777A" TextColor="White"
+                       BackgroundColor="#0D2B45" HeightRequest="52"/>
 
-            <VerticalStackLayout Spacing="4">
-                <Label Text="Fecha de nacimiento *" TextColor="#77777A" FontSize="13"/>
-                <DatePicker Date="{Binding FechaNacimiento}"
-                            Format="dd/MM/yyyy"
-                            TextColor="White"
-                            BackgroundColor="#0D2B45"
-                            HeightRequest="52"/>
+                <Entry Placeholder="Correo electrónico *" Text="{Binding Email}"
+                       Keyboard="Email" PlaceholderColor="#77777A"
+                       TextColor="White" BackgroundColor="#0D2B45" HeightRequest="52"/>
+
+                <Entry Placeholder="Contraseña *" Text="{Binding Password}"
+                       IsPassword="True" PlaceholderColor="#77777A"
+                       TextColor="White" BackgroundColor="#0D2B45" HeightRequest="52"/>
+
+                <Entry Placeholder="Confirmar contraseña *" Text="{Binding ConfirmarPassword}"
+                       IsPassword="True" PlaceholderColor="#77777A"
+                       TextColor="White" BackgroundColor="#0D2B45" HeightRequest="52"/>
+
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="Fecha de nacimiento *" TextColor="#77777A" FontSize="13"/>
+                    <DatePicker Date="{Binding FechaNacimiento}"
+                                Format="dd/MM/yyyy" TextColor="White"
+                                BackgroundColor="#0D2B45" HeightRequest="52"/>
+                </VerticalStackLayout>
+
+                <Label Text="{Binding ErrorMensaje}" TextColor="#E3122B"
+                       IsVisible="{Binding ErrorMensaje, Converter={StaticResource StringToBoolConverter}}"
+                       HorizontalOptions="Center"/>
+
+                <Button Text="SIGUIENTE →"
+                        Command="{Binding SiguienteCommand}"
+                        BackgroundColor="#FFD700" TextColor="#001F3F"
+                        FontAttributes="Bold" HeightRequest="52" CornerRadius="8"/>
+
+                <Button Text="Ya tengo cuenta"
+                        Command="{Binding RegresarCommand}"
+                        BackgroundColor="Transparent" TextColor="White"
+                        BorderColor="White" BorderWidth="1"
+                        HeightRequest="52" CornerRadius="8"/>
+
             </VerticalStackLayout>
 
-            <Label Text="{Binding ErrorMensaje}"
-                   TextColor="#E3122B"
-                   IsVisible="{Binding ErrorMensaje, Converter={StaticResource StringToBoolConverter}}"
-                   HorizontalOptions="Center"/>
+            <!-- PASO 2 -->
+            <VerticalStackLayout IsVisible="{Binding EnPaso2}" Spacing="12">
 
-            <ActivityIndicator IsRunning="{Binding IsBusy}"
-                               IsVisible="{Binding IsBusy}"
-                               Color="#FFD700"/>
+                <Label Text="Paso 2 de 2 — Dirección de entrega"
+                       TextColor="#77777A" FontSize="13"
+                       HorizontalOptions="Center"/>
 
-            <Button Text="REGISTRARME"
-                    Command="{Binding RegistrarCommand}"
-                    BackgroundColor="#FFD700"
-                    TextColor="#001F3F"
-                    FontAttributes="Bold"
-                    HeightRequest="52"
-                    CornerRadius="8"/>
+                <Entry Placeholder="Calle y número *" Text="{Binding CalleNumero}"
+                       PlaceholderColor="#77777A" TextColor="White"
+                       BackgroundColor="#0D2B45" HeightRequest="52"/>
 
-            <Button Text="Ya tengo cuenta"
-                    Command="{Binding RegresarCommand}"
-                    BackgroundColor="Transparent"
-                    TextColor="White"
-                    BorderColor="White"
-                    BorderWidth="1"
-                    HeightRequest="52"
-                    CornerRadius="8"/>
+                <Entry Placeholder="Colonia *" Text="{Binding Colonia}"
+                       PlaceholderColor="#77777A" TextColor="White"
+                       BackgroundColor="#0D2B45" HeightRequest="52"/>
+
+                <Entry Placeholder="Código postal *" Text="{Binding CodigoPostal}"
+                       Keyboard="Numeric" PlaceholderColor="#77777A"
+                       TextColor="White" BackgroundColor="#0D2B45" HeightRequest="52"/>
+
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="Ciudad *" TextColor="#77777A" FontSize="13"/>
+                    <Picker Title="Selecciona tu ciudad"
+                            TextColor="White" BackgroundColor="#0D2B45"
+                            HeightRequest="52"
+                            ItemsSource="{Binding Ciudades}"
+                            ItemDisplayBinding="{Binding Nombre}"
+                            SelectedItem="{Binding CiudadSeleccionada}"/>
+                </VerticalStackLayout>
+
+                <Label Text="{Binding ErrorMensaje}" TextColor="#E3122B"
+                       IsVisible="{Binding ErrorMensaje, Converter={StaticResource StringToBoolConverter}}"
+                       HorizontalOptions="Center"/>
+
+                <ActivityIndicator IsRunning="{Binding IsBusy}"
+                                   IsVisible="{Binding IsBusy}"
+                                   Color="#FFD700"/>
+
+                <Button Text="REGISTRARME"
+                        Command="{Binding RegistrarCommand}"
+                        BackgroundColor="#FFD700" TextColor="#001F3F"
+                        FontAttributes="Bold" HeightRequest="52" CornerRadius="8"/>
+
+                <Button Text="← Regresar"
+                        Command="{Binding RegresarPaso1Command}"
+                        BackgroundColor="Transparent" TextColor="White"
+                        BorderColor="White" BorderWidth="1"
+                        HeightRequest="52" CornerRadius="8"/>
+
+            </VerticalStackLayout>
 
         </VerticalStackLayout>
     </ScrollView>

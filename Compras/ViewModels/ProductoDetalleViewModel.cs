@@ -8,16 +8,28 @@ namespace Compras.ViewModels;
 public class ProductoDetalleViewModel : BaseViewModel
 {
     private readonly CarritoService _carritoService;
+    private readonly SesionService _sesionService;
 
-    public ProductoDetalleViewModel(CarritoService carritoService)
+    public ProductoDetalleViewModel(CarritoService carritoService, SesionService sesionService)
     {
         _carritoService = carritoService;
+        _sesionService = sesionService;
 
-        AgregarAlCarritoCommand = new Command(() =>
+        AgregarAlCarritoCommand = new Command(async () =>
         {
+            if (!_sesionService.EstaAutenticado)
+            {
+                await Shell.Current.DisplayAlert(
+                    "Inicia sesión",
+                    "Necesitas iniciar sesión para agregar productos al carrito.",
+                    "OK");
+                await Shell.Current.GoToAsync("//LoginPage");
+                return;
+            }
+
             if (Producto is null) return;
             _carritoService.Agregar(Producto);
-            Shell.Current.DisplayAlert("Carrito",
+            await Shell.Current.DisplayAlert("Carrito",
                 $"{Producto.Nombre} agregado al carrito.", "OK");
         });
     }
