@@ -18,17 +18,27 @@ public class CatalogoViewModel : BaseViewModel
             _filtroPromocion = value;
             OnPropertyChanged();
             if (!string.IsNullOrEmpty(value))
-            {
                 Busqueda = value;
-                FiltrarProductos();
-            }
         }
     }
+
     private readonly CatalogoService _catalogoService;
     private readonly CarritoService _carritoService;
 
     public ObservableCollection<ProductoDto> Productos { get; } = [];
     public ObservableCollection<CategoriaDto> Categorias { get; } = [];
+
+    private int _paginaActual = 1;
+    private bool _hayMas = true;
+
+    private bool _cargandoMas;
+    public bool CargandoMas
+    {
+        get => _cargandoMas;
+        set { _cargandoMas = value; OnPropertyChanged(); }
+    }
+
+    public bool HayMas => _hayMas && string.IsNullOrWhiteSpace(Busqueda);
 
     public CatalogoViewModel(CatalogoService catalogoService, CarritoService carritoService)
     {
@@ -45,6 +55,8 @@ public class CatalogoViewModel : BaseViewModel
         {
             Busqueda = categoria.Nombre;
         });
+        CargarMasCommand = new Command(async () => await CargarMasAsync(),
+            () => _hayMas && !CargandoMas);
 
         CargarCommand.Execute(null);
     }
@@ -52,6 +64,24 @@ public class CatalogoViewModel : BaseViewModel
     public Command CargarCommand { get; }
     public ICommand VerProductoCommand { get; }
     public ICommand FiltrarPorCategoriaCommand { get; }
+    public ICommand CargarMasCommand { get; }
+
+    private async Task FiltrarConBusquedaAsync()
+    {
+        if (string.IsNullOrWhiteSpace(Busqueda))
+        {
+            // Sin búsqueda: mostrar solo la página actual
+            FiltrarProductos();
+            return;
+        }
+
+        // Con búsqueda: traer todos y filtrar
+        IsBusy = true;
+        var todos = await _catalogoService.GetProductosAsync();
+        _todosLosProductos = todos;
+        FiltrarProductos();
+        IsBusy = false;
+    }
 
     private string _busqueda = string.Empty;
     public string Busqueda
@@ -61,30 +91,34 @@ public class CatalogoViewModel : BaseViewModel
         {
             _busqueda = value;
             OnPropertyChanged();
-            FiltrarProductos();
+            _ = FiltrarConBusquedaAsync();
         }
     }
 
     private List<ProductoDto> _todosLosProductos = [];
 
-    private async Task CargarAsync()
+    
+
+    private async Task CargarMasAsync()
     {
-        if (IsBusy) return;
-        IsBusy = true;
+        if (CargandoMas || !_hayMas) return;
+        CargandoMas = true;
 
-        var productos = await _catalogoService.GetProductosAsync();
-        var categorias = await _catalogoService.GetCategoriasAsync();
+        _paginaActual++;
+        var resultado = await _catalogoService.GetProductosPaginadosAsync(_paginaActual);
+        _hayMas = resultado.HayMas;
 
-        _todosLosProductos = productos;
-        Productos.Clear();
-        foreach (var p in productos)
-            Productos.Add(p);
+        foreach (var p in resultado.Productos)
+        {
+            if (!_todosLosProductos.Any(x => x.Id == p.Id))
+            {
+                _todosLosProductos.Add(p);
+            }
+        }
 
-        Categorias.Clear();
-        foreach (var c in categorias.DistinctBy(c => c.Nombre))
-            Categorias.Add(c);
-
-        IsBusy = false;
+        FiltrarProductos();
+        ((Command)CargarMasCommand).ChangeCanExecute();
+        CargandoMas = false;
     }
 
     private void FiltrarProductos()
@@ -98,10 +132,36 @@ public class CatalogoViewModel : BaseViewModel
         Productos.Clear();
         foreach (var p in filtrados)
             Productos.Add(p);
+
+        OnPropertyChanged(nameof(HayMas));
     }
 
     public async Task RecargarAsync()
     {
         await CargarAsync();
+    }
+
+    private async Task CargarAsync()
+    {
+        if (IsBusy) return;
+        IsBusy = true;
+        _paginaActual = 1;
+        _hayMas = true;
+
+        var resultado = await _catalogoService.GetProductosPaginadosAsync(_paginaActual);
+        _todosLosProductos = resultado.Productos;
+        _hayMas = resultado.HayMas;
+
+        var categorias = await _catalogoService.GetCategoriasAsync();
+        Categorias.Clear();
+        foreach (var c in categorias.DistinctBy(c => c.Nombre))
+            Categorias.Add(c);
+
+        // Aplicar filtro pendiente si existe
+        if (!string.IsNullOrEmpty(FiltroPromocion))
+            Busqueda = FiltroPromocion;
+
+        FiltrarProductos();
+        IsBusy = false;
     }
 }

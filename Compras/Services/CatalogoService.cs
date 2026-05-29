@@ -12,17 +12,17 @@ public class CatalogoService
         _http = httpClientFactory.CreateClient("Gateway");
     }
 
-    public async Task<List<ProductoDto>> GetProductosAsync()
+    public async Task<PaginaProductosDto> GetProductosPaginadosAsync(int pagina = 1, int cantidad = 8)
     {
         try
         {
-            var productos = await _http.GetFromJsonAsync<List<ProductoDto>>(
-                "/api/catalogo/productos");
-            return productos ?? [];
+            var resultado = await _http.GetFromJsonAsync<PaginaProductosDto>(
+                $"/api/catalogo/productos?pagina={pagina}&cantidad={cantidad}");
+            return resultado ?? new PaginaProductosDto();
         }
         catch
         {
-            return [];
+            return new PaginaProductosDto();
         }
     }
 
@@ -36,6 +36,19 @@ public class CatalogoService
         catch
         {
             return null;
+        }
+    }
+
+    public async Task<List<ProductoDto>> GetProductosAsync()
+    {
+        try
+        {
+            var resultado = await GetProductosPaginadosAsync(1, 100);
+            return resultado.Productos;
+        }
+        catch
+        {
+            return [];
         }
     }
 
