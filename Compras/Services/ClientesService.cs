@@ -87,6 +87,103 @@ public class ClientesService
             return null;
         }
     }
+
+    public async Task<(bool Exito, string Mensaje, string Error)> RegistrarCompraCredito(
+        int idUsuario, decimal monto, string descripcion)
+    {
+        try
+        {
+            var dto = new { Monto = monto, Descripcion = descripcion };
+            var response = await _http.PostAsJsonAsync(
+                $"/api/clientes/{idUsuario}/credito/compra", dto);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var resultado = await response.Content
+                    .ReadFromJsonAsync<ResultadoCreditoDto>();
+                return (true, resultado?.Mensaje ?? string.Empty, string.Empty);
+            }
+
+            var error = await response.Content.ReadFromJsonAsync<ErrorDto>();
+            return (false, string.Empty, error?.Error ?? "Error al registrar compra.");
+        }
+        catch
+        {
+            return (false, string.Empty, "No se pudo conectar al servidor.");
+        }
+    }
+
+    public async Task<CreditoDto?> GetCreditoAsync(int idUsuario)
+    {
+        try
+        {
+            return await _http.GetFromJsonAsync<CreditoDto>(
+                $"/api/clientes/{idUsuario}/credito");
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    public async Task<List<MovimientoDto>> GetMovimientosAsync(int idUsuario)
+    {
+        try
+        {
+            var movimientos = await _http.GetFromJsonAsync<List<MovimientoDto>>(
+                $"/api/clientes/{idUsuario}/credito/movimientos");
+            return movimientos ?? [];
+        }
+        catch
+        {
+            return [];
+        }
+    }
+
+    public async Task<(bool Exito, string Error)> PagarCreditoAsync(
+        int idUsuario, decimal monto)
+    {
+        try
+        {
+            var dto = new { Monto = monto };
+            var response = await _http.PostAsJsonAsync(
+                $"/api/clientes/{idUsuario}/credito/pago", dto);
+
+            if (response.IsSuccessStatusCode)
+                return (true, string.Empty);
+
+            var error = await response.Content.ReadFromJsonAsync<ErrorDto>();
+            return (false, error?.Error ?? "Error al realizar el pago.");
+        }
+        catch
+        {
+            return (false, "No se pudo conectar al servidor.");
+        }
+    }
+
+    public async Task<(bool Exito, string Mensaje, string Error)> SolicitarCreditoAsync(
+        int idUsuario)
+    {
+        try
+        {
+            var response = await _http.PostAsJsonAsync(
+                $"/api/clientes/{idUsuario}/credito/solicitar", new { });
+
+            if (response.IsSuccessStatusCode)
+            {
+                var resultado = await response.Content
+                    .ReadFromJsonAsync<ResultadoCreditoDto>();
+                return (true, resultado?.Mensaje ?? "Crédito aprobado.", string.Empty);
+            }
+
+            var error = await response.Content.ReadFromJsonAsync<ErrorDto>();
+            return (false, string.Empty, error?.Error ?? "Error al solicitar crédito.");
+        }
+        catch
+        {
+            return (false, string.Empty, "No se pudo conectar al servidor.");
+        }
+    }
 }
 
 public record ErrorDto(string? Error, string[]? Errores);

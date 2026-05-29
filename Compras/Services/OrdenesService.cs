@@ -26,6 +26,20 @@ public class OrdenesService
         }
     }
 
+    public async Task<List<int>> GetProductosMasVendidosAsync()
+    {
+        try
+        {
+            var ids = await _http.GetFromJsonAsync<List<int>>(
+                "/api/ordenes/productos-mas-vendidos");
+            return ids ?? [];
+        }
+        catch
+        {
+            return [];
+        }
+    }
+
     public async Task<(bool Exito, int IdOrden, string Error)> CrearOrdenAsync(
     int idUsuario,
     int idDireccionEnvio,

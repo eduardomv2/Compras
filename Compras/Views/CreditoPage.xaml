@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Compras.ViewModels"
+             xmlns:models="clr-namespace:Compras.Models"
+             x:Class="Compras.Views.CreditoPage"
+             x:DataType="vm:CreditoViewModel"
+             Title="Mi Crédito"
+             BackgroundColor="#F2F2F2">
+
+    <RefreshView Command="{Binding CargarCommand}"
+                 IsRefreshing="{Binding IsBusy}">
+        <ScrollView>
+            <VerticalStackLayout Padding="16" Spacing="16">
+
+                <!-- Sin crédito -->
+                <Border IsVisible="{Binding SinCredito}"
+                        BackgroundColor="White" StrokeThickness="0"
+                        StrokeShape="RoundRectangle 12" Padding="20">
+                    <VerticalStackLayout Spacing="16" HorizontalOptions="Center">
+                        <Label Text="💳" FontSize="48" HorizontalOptions="Center"/>
+                        <Label Text="No tienes crédito activo"
+                               FontSize="18" FontAttributes="Bold"
+                               TextColor="#001F3F" HorizontalOptions="Center"/>
+                        <Label Text="Necesitas 6 meses como cliente para solicitar crédito."
+                               TextColor="#77777A" FontSize="13"
+                               HorizontalTextAlignment="Center"/>
+                        <Button Text="SOLICITAR CRÉDITO"
+                                Command="{Binding SolicitarCreditoCommand}"
+                                BackgroundColor="#001F3F"
+                                TextColor="White"
+                                FontAttributes="Bold"
+                                HeightRequest="52"
+                                CornerRadius="8"/>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Con crédito -->
+                <VerticalStackLayout IsVisible="{Binding SinCredito, Converter={StaticResource InvertBoolConverter}}"
+                                     Spacing="16">
+
+                    <!-- Tarjeta de crédito -->
+                    <Border BackgroundColor="#001F3F" StrokeThickness="0"
+                            StrokeShape="RoundRectangle 16" Padding="20">
+                        <VerticalStackLayout Spacing="12">
+                            <Label Text="Mi Crédito" TextColor="#FFD700"
+                                   FontAttributes="Bold" FontSize="16"/>
+                            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto">
+                                <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                    <Label Text="Disponible" TextColor="#B0BEC5" FontSize="12"/>
+                                    <Label Text="{Binding Credito.CreditoDisponible, StringFormat='${0:N2}'}"
+                                           TextColor="White" FontAttributes="Bold" FontSize="24"/>
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="1" Spacing="4">
+                                    <Label Text="Límite" TextColor="#B0BEC5" FontSize="12"/>
+                                    <Label Text="{Binding Credito.LimiteCredito, StringFormat='${0:N2}'}"
+                                           TextColor="White" FontSize="18"/>
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="0" Grid.Row="1" Spacing="4" Margin="0,12,0,0">
+                                    <Label Text="Usado" TextColor="#B0BEC5" FontSize="12"/>
+                                    <Label Text="{Binding Credito.SaldoUsado, StringFormat='${0:N2}'}"
+                                           TextColor="#FFD700" FontSize="18"/>
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="1" Grid.Row="1" Spacing="4" Margin="0,12,0,0">
+                                    <Label Text="Intereses mensuales" TextColor="#B0BEC5" FontSize="12"/>
+                                    <Label Text="{Binding Credito.InteresesMensuales, StringFormat='${0:N2}'}"
+                                           TextColor="#E3122B" FontSize="18"/>
+                                </VerticalStackLayout>
+                            </Grid>
+                            <ProgressBar Progress="{Binding PorcentajeUso}"
+                                         ProgressColor="#FFD700"
+                                         BackgroundColor="#0D2B45"/>
+                            <Label Text="{Binding Credito.TotalCompras, StringFormat='Compras realizadas: {0}'}"
+                                   TextColor="#B0BEC5" FontSize="12"/>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Pagar crédito -->
+                    <Border BackgroundColor="White" StrokeThickness="0"
+                            StrokeShape="RoundRectangle 12" Padding="16"
+                            IsVisible="{Binding TieneSaldo}">
+                        <VerticalStackLayout Spacing="12">
+                            <Label Text="Realizar pago" FontAttributes="Bold"
+                                   FontSize="16" TextColor="#001F3F"/>
+                            <Label Text="{Binding Credito.InteresesAcumulados, StringFormat='Intereses acumulados: ${0:N2}'}"
+                                   TextColor="#E3122B" FontSize="13"/>
+                            <Entry Placeholder="Monto a pagar"
+                                   Text="{Binding MontoPago}"
+                                   Keyboard="Numeric"
+                                   HeightRequest="52"/>
+                            <Label Text="{Binding ErrorMensaje}"
+                                   TextColor="#E3122B"
+                                   IsVisible="{Binding ErrorMensaje, Converter={StaticResource StringToBoolConverter}}"/>
+                            <Button Text="PAGAR"
+                                    Command="{Binding PagarCommand}"
+                                    BackgroundColor="#001F3F"
+                                    TextColor="White"
+                                    FontAttributes="Bold"
+                                    HeightRequest="52"
+                                    CornerRadius="8"/>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Historial -->
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Historial de movimientos"
+                               FontAttributes="Bold" FontSize="16"
+                               TextColor="#001F3F"/>
+                        <CollectionView ItemsSource="{Binding Movimientos}">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="models:MovimientoDto">
+                                    <Border BackgroundColor="White" StrokeThickness="0"
+                                            StrokeShape="RoundRectangle 8"
+                                            Padding="16,12" Margin="0,0,0,8">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                                <Label Text="{Binding Descripcion}"
+                                                       FontSize="13" TextColor="#001F3F"/>
+                                                <Label Text="{Binding Fecha, Converter={StaticResource UtcToLocalConverter}}"
+                                                       FontSize="11" TextColor="#77777A"/>
+                                            </VerticalStackLayout>
+                                            <Label Grid.Column="1"
+                                                   Text="{Binding Monto, StringFormat='${0:N2}'}"
+                                                   FontAttributes="Bold" FontSize="15"
+                                                   VerticalOptions="Center"
+                                                   TextColor="#001F3F"/>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </VerticalStackLayout>
+
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </RefreshView>
+</ContentPage>

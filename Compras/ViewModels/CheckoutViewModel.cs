@@ -2,7 +2,6 @@
 using Compras.Services;
 using System.Windows.Input;
 
-
 namespace Compras.ViewModels;
 
 public class CheckoutViewModel : BaseViewModel
@@ -14,6 +13,8 @@ public class CheckoutViewModel : BaseViewModel
     private readonly EnviosService _enviosService;
     private readonly ClientesService _clientesService;
     private readonly CatalogoService _catalogoService;
+
+    private CreditoDto? _credito;
 
     public CheckoutViewModel(
         CarritoService carritoService,
@@ -32,9 +33,30 @@ public class CheckoutViewModel : BaseViewModel
         _clientesService = clientesService;
         _catalogoService = catalogoService;
         Titulo = "Checkout";
+
         PagarCommand = new Command(async () => await PagarAsync());
+
+        SeleccionarDebitoCommand = new Command(() => EsDebito = true);
+
+        SeleccionarCreditoCommand = new Command(async () =>
+        {
+            EsDebito = false;
+            if (_credito is null)
+            {
+                _credito = await _clientesService.GetCreditoAsync(
+                    _sesionService.UsuarioActual?.Id ?? 0);
+                OnPropertyChanged(nameof(CreditoDisponibleTexto));
+            }
+        });
+
+        SeleccionarMesesCommand = new Command<string>(meses =>
+        {
+            if (int.TryParse(meses, out var m))
+                MesesSinIntereses = m;
+        });
     }
 
+    // ── Datos de tarjeta ──────────────────────────────────────────
     private string _numeroTarjeta = string.Empty;
     public string NumeroTarjeta
     {
@@ -70,13 +92,43 @@ public class CheckoutViewModel : BaseViewModel
         set { _cvv = value; OnPropertyChanged(); }
     }
 
-    private int _mesesSinIntereses = 1;
+    // ── Método de pago ────────────────────────────────────────────
+    private bool _esDebito = true;
+    public bool EsDebito
+    {
+        get => _esDebito;
+        set
+        {
+            _esDebito = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(EsCredito));
+        }
+    }
+    public bool EsCredito => !EsDebito;
+
+    private int _mesesSinIntereses = 3;
     public int MesesSinIntereses
     {
         get => _mesesSinIntereses;
-        set { _mesesSinIntereses = value; OnPropertyChanged(); }
+        set
+        {
+            _mesesSinIntereses = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(Meses3Seleccionado));
+            OnPropertyChanged(nameof(Meses6Seleccionado));
+            OnPropertyChanged(nameof(Meses12Seleccionado));
+        }
     }
 
+    public bool Meses3Seleccionado => MesesSinIntereses == 3;
+    public bool Meses6Seleccionado => MesesSinIntereses == 6;
+    public bool Meses12Seleccionado => MesesSinIntereses == 12;
+
+    public string CreditoDisponibleTexto => _credito is null
+        ? "Cargando..."
+        : $"Disponible: ${_credito.CreditoDisponible:N2}";
+
+    // ── Error ─────────────────────────────────────────────────────
     private string _errorMensaje = string.Empty;
     public string ErrorMensaje
     {
@@ -84,21 +136,25 @@ public class CheckoutViewModel : BaseViewModel
         set { _errorMensaje = value; OnPropertyChanged(); }
     }
 
+    // ── Totales ───────────────────────────────────────────────────
     public decimal Total => _carritoService.Total;
     public decimal Descuento => _carritoService.DescuentoTotal;
     public decimal Subtotal => _carritoService.Subtotal;
 
+    // ── Comandos ──────────────────────────────────────────────────
     public ICommand PagarCommand { get; }
+    public ICommand SeleccionarDebitoCommand { get; }
+    public ICommand SeleccionarCreditoCommand { get; }
+    public ICommand SeleccionarMesesCommand { get; }
 
     private async Task PagarAsync()
     {
-        if (IsBusy) return;
-
-        if (string.IsNullOrWhiteSpace(NumeroTarjeta) ||
-            string.IsNullOrWhiteSpace(NombreTarjeta) ||
-            string.IsNullOrWhiteSpace(MesExpiracion) ||
-            string.IsNullOrWhiteSpace(AnioExpiracion) ||
-            string.IsNullOrWhiteSpace(Cvv))
+        if (EsDebito &&
+            (string.IsNullOrWhiteSpace(NumeroTarjeta) ||
+             string.IsNullOrWhiteSpace(NombreTarjeta) ||
+             string.IsNullOrWhiteSpace(MesExpiracion) ||
+             string.IsNullOrWhiteSpace(AnioExpiracion) ||
+             string.IsNullOrWhiteSpace(Cvv)))
         {
             ErrorMensaje = "Todos los campos de la tarjeta son obligatorios.";
             return;
@@ -107,11 +163,25 @@ public class CheckoutViewModel : BaseViewModel
         IsBusy = true;
         ErrorMensaje = string.Empty;
 
-        // Verificar stock antes de pagar
+        var usuario = _sesionService.UsuarioActual!;
+
+        // Verificar crédito disponible si aplica
+        if (EsCredito)
+        {
+            _credito ??= await _clientesService.GetCreditoAsync(usuario.Id);
+            if (_credito is null || _credito.CreditoDisponible < Total)
+            {
+                ErrorMensaje = $"Crédito insuficiente. Disponible: ${_credito?.CreditoDisponible:N2}";
+                IsBusy = false;
+                return;
+            }
+        }
+
+        // Verificar stock
         foreach (var item in _carritoService.Items.ToList())
         {
             var producto = await _catalogoService.GetProductoAsync(item.Producto.Id);
-            if (producto is null || producto.Stock < item.Cantidad)
+            if (producto is not null && producto.Stock < item.Cantidad)
             {
                 ErrorMensaje = $"Stock insuficiente para {item.Producto.Nombre}.";
                 IsBusy = false;
@@ -119,12 +189,10 @@ public class CheckoutViewModel : BaseViewModel
             }
         }
 
-        var usuario = _sesionService.UsuarioActual!;
-
         // 1. Crear la orden
         var (ordenExito, idOrden, ordenError) = await _ordenesService.CrearOrdenAsync(
             usuario.Id,
-            idDireccionEnvio: 1, // temporal
+            idDireccionEnvio: 1,
             Subtotal,
             Descuento,
             Total,
@@ -138,39 +206,56 @@ public class CheckoutViewModel : BaseViewModel
         }
 
         // 2. Procesar el pago
-        var (pagoExito, pagoError) = await _pagosService.ProcesarPagoAsync(
-            usuario.Id,
-            NumeroTarjeta, NombreTarjeta,
-            MesExpiracion, AnioExpiracion, Cvv,
-            Total, MesesSinIntereses,
-            idOrden);
-
-        if (pagoExito)
+        if (EsDebito)
         {
-            // Descontar stock de cada producto
-            foreach (var item in _carritoService.Items.ToList())
+            // Pago con tarjeta via OpenPay
+            var (pagoExito, pagoError) = await _pagosService.ProcesarPagoAsync(
+                usuario.Id,
+                NumeroTarjeta, NombreTarjeta,
+                MesExpiracion, AnioExpiracion, Cvv,
+                Total, 1, idOrden);
+
+            if (!pagoExito)
             {
-                await _catalogoService.DescontarStockAsync(
-                    item.Producto.Id, item.Cantidad);
+                ErrorMensaje = pagoError;
+                IsBusy = false;
+                return;
+            }
+        }
+        else
+        {
+            // Pago con crédito de la tienda — no pasa por OpenPay
+            var (creditoExito, mensajeCredito, errorCredito) =
+                await _clientesService.RegistrarCompraCredito(
+                    usuario.Id, Total,
+                    $"Compra orden #{idOrden} a {MesesSinIntereses} MSI");
+
+            if (!creditoExito)
+            {
+                ErrorMensaje = errorCredito;
+                IsBusy = false;
+                return;
             }
 
-            // Obtener dirección del usuario
-            var direccion = await _clientesService.GetDireccionPrincipalAsync(usuario.Id);
-            var direccionSnapshot = direccion?.DireccionCompleta
-                ?? "Dirección no registrada";
-
-            var envioCreado = await _enviosService.CrearEnvioAsync(
-                idOrden,
-                direccionSnapshot,
-                "Repartidor asignado",
-                DateTime.UtcNow.AddDays(3));
-
-            _carritoService.Limpiar();
-            await Shell.Current.DisplayAlert(
-                "¡Pago exitoso!",
-                $"Tu pedido #{idOrden} ha sido procesado.", "OK");
-            await Shell.Current.GoToAsync("//MisPedidosPage");
+            if (!string.IsNullOrEmpty(mensajeCredito))
+                await Shell.Current.DisplayAlert("Crédito", mensajeCredito, "OK");
         }
+
+        // 4. Descontar stock
+        foreach (var item in _carritoService.Items.ToList())
+            await _catalogoService.DescontarStockAsync(item.Producto.Id, item.Cantidad);
+
+        // 5. Obtener dirección y crear envío
+        var direccion = await _clientesService.GetDireccionPrincipalAsync(usuario.Id);
+        var direccionSnapshot = direccion?.DireccionCompleta ?? "Dirección no registrada";
+        await _enviosService.CrearEnvioAsync(
+            idOrden, direccionSnapshot, "Repartidor asignado", DateTime.UtcNow.AddDays(3));
+
+        _carritoService.Limpiar();
+        await Shell.Current.DisplayAlert(
+            "¡Pago exitoso!",
+            $"Tu pedido #{idOrden} ha sido procesado.", "OK");
+        await Shell.Current.GoToAsync("//MisPedidosPage");
 
         IsBusy = false;
     }

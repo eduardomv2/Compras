@@ -10,19 +10,15 @@
                   ContentTemplate="{DataTemplate views:LoginPage}"
                   Route="LoginPage"/>
 
-    <!-- Tab bar invitado -->
-    <TabBar Route="Invitado">
-        <ShellContent Title="Catálogo"
-                      Route="CatalogoPageInvitado"
-                      ContentTemplate="{DataTemplate views:CatalogoPage}">
-            <ShellContent.Icon>
-                <FontImageSource Glyph="⊞" Color="#001F3F" Size="20"/>
-            </ShellContent.Icon>
-        </ShellContent>
-    </TabBar>
-
     <!-- Tab bar usuario autenticado -->
     <TabBar Route="Main">
+        <ShellContent Title="Inicio"
+                      Route="InicioPage"
+                      ContentTemplate="{DataTemplate views:InicioPage}">
+            <ShellContent.Icon>
+                <FontImageSource Glyph="⌂" Color="#001F3F" Size="20"/>
+            </ShellContent.Icon>
+        </ShellContent>
         <ShellContent Title="Catálogo"
                       Route="CatalogoPage"
                       ContentTemplate="{DataTemplate views:CatalogoPage}">
@@ -42,6 +38,32 @@
                       ContentTemplate="{DataTemplate views:MisPedidosPage}">
             <ShellContent.Icon>
                 <FontImageSource Glyph="📦" Color="#001F3F" Size="20"/>
+            </ShellContent.Icon>
+        </ShellContent>
+
+        <ShellContent Title="Crédito"
+              Route="CreditoPageTab"
+              ContentTemplate="{DataTemplate views:CreditoPage}">
+            <ShellContent.Icon>
+                <FontImageSource Glyph="💳" Color="#001F3F" Size="20"/>
+            </ShellContent.Icon>
+        </ShellContent>
+    </TabBar>
+
+    <!-- Tab bar invitado -->
+    <TabBar Route="Invitado">
+        <ShellContent Title="Inicio"
+                      Route="InicioPageInvitado"
+                      ContentTemplate="{DataTemplate views:InicioPage}">
+            <ShellContent.Icon>
+                <FontImageSource Glyph="⌂" Color="#001F3F" Size="20"/>
+            </ShellContent.Icon>
+        </ShellContent>
+        <ShellContent Title="Catálogo"
+                      Route="CatalogoPageInvitado"
+                      ContentTemplate="{DataTemplate views:CatalogoPage}">
+            <ShellContent.Icon>
+                <FontImageSource Glyph="⊞" Color="#001F3F" Size="20"/>
             </ShellContent.Icon>
         </ShellContent>
     </TabBar>

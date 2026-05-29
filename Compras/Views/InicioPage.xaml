@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Compras.ViewModels"
+             xmlns:models="clr-namespace:Compras.Models"
+             x:Class="Compras.Views.InicioPage"
+             x:DataType="vm:InicioViewModel"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="#F2F2F2">
+
+    <RefreshView Command="{Binding CargarCommand}"
+                 IsRefreshing="{Binding IsBusy}">
+        <ScrollView>
+            <VerticalStackLayout Spacing="0">
+
+                <!-- Header -->
+                <Grid BackgroundColor="#001F3F" Padding="16,12">
+                    <Label Text="TIENDA" FontSize="22" FontAttributes="Bold"
+                           TextColor="#FFD700" HorizontalOptions="Start"
+                           VerticalOptions="Center"/>
+                </Grid>
+
+                <!-- Carrusel de promociones -->
+                <VerticalStackLayout Margin="0,12,0,0">
+                    <CarouselView ItemsSource="{Binding Promociones}"
+                                  HeightRequest="160"
+                                  Loop="True">
+                        <CarouselView.ItemTemplate>
+                            <DataTemplate x:DataType="models:PromocionDto">
+                                <Border Margin="16,0"
+                                        BackgroundColor="#001F3F"
+                                        StrokeThickness="0"
+                                        StrokeShape="RoundRectangle 16">
+                                    <Grid ColumnDefinitions="*,Auto" Padding="20">
+                                        <VerticalStackLayout Grid.Column="0"
+                                                             VerticalOptions="Center"
+                                                             Spacing="8">
+                                            <Label Text="{Binding TextoDescuento}"
+                                                   FontSize="36" FontAttributes="Bold"
+                                                   TextColor="#FFD700"/>
+                                            <Label Text="{Binding NombreCampana}"
+                                                   FontSize="16" TextColor="White"
+                                                   FontAttributes="Bold"/>
+                                            <Label Text="{Binding TextoMinimo}"
+                                                   FontSize="12" TextColor="#B0BEC5"/>
+                                        </VerticalStackLayout>
+                                        <Label Grid.Column="1" Text="🏷️"
+                                               FontSize="48"
+                                               VerticalOptions="Center"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CarouselView.ItemTemplate>
+                    </CarouselView>
+
+                    <!-- Indicadores del carrusel -->
+                    <IndicatorView x:Name="indicador"
+                                   HorizontalOptions="Center"
+                                   IndicatorColor="#77777A"
+                                   SelectedIndicatorColor="#001F3F"
+                                   Margin="0,8,0,0"/>
+                </VerticalStackLayout>
+
+                <!-- Categorías -->
+                <VerticalStackLayout Margin="16,16,16,0" Spacing="8">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Text="Categorías" FontSize="18"
+               FontAttributes="Bold" TextColor="#001F3F"/>
+                        <Label Grid.Column="1" Text="Ver todas →"
+               TextColor="#001F3F" FontSize="13"
+               VerticalOptions="Center">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding VerCatalogoCommand}"/>
+                            </Label.GestureRecognizers>
+                        </Label>
+                    </Grid>
+                    <CollectionView ItemsSource="{Binding CategoriasDestacadas}">
+                        <CollectionView.ItemsLayout>
+                            <GridItemsLayout Orientation="Vertical"
+                             Span="2"
+                             HorizontalItemSpacing="8"
+                             VerticalItemSpacing="8"/>
+                        </CollectionView.ItemsLayout>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:CategoriaDto">
+                                <Border BackgroundColor="#001F3F"
+                        StrokeThickness="0"
+                        StrokeShape="RoundRectangle 12"
+                        Padding="16,14">
+                                    <Label Text="{Binding Nombre}"
+                           TextColor="White"
+                           FontSize="13"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center"
+                           HorizontalTextAlignment="Center"/>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+
+                <!-- Productos destacados -->
+                <VerticalStackLayout Margin="16,16,16,16" Spacing="8">
+                    <CollectionView ItemsSource="{Binding Destacados}">
+                        <CollectionView.ItemsLayout>
+                            <GridItemsLayout Orientation="Vertical"
+                                             Span="2"
+                                             HorizontalItemSpacing="8"
+                                             VerticalItemSpacing="8"/>
+                        </CollectionView.ItemsLayout>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:ProductoDto">
+                                <Border BackgroundColor="White"
+                                        StrokeThickness="0"
+                                        StrokeShape="RoundRectangle 12"
+                                        Padding="0">
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:InicioViewModel}}, Path=VerProductoCommand}"
+                                            CommandParameter="{Binding .}"/>
+                                    </Border.GestureRecognizers>
+                                    <VerticalStackLayout>
+                                        <Image Source="{Binding ImagenPortada}"
+                                               HeightRequest="130"
+                                               Aspect="AspectFill"/>
+                                        <VerticalStackLayout Padding="10,8" Spacing="4">
+                                            <Label Text="{Binding Nombre}"
+                                                   FontAttributes="Bold"
+                                                   FontSize="13"
+                                                   TextColor="#001F3F"
+                                                   MaxLines="2"/>
+                                            <Label Text="{Binding Marca}"
+                                                   FontSize="11"
+                                                   TextColor="#77777A"/>
+                                            <Label Text="{Binding PrecioVenta, StringFormat='${0:N2}'}"
+                                                   FontSize="15"
+                                                   FontAttributes="Bold"
+                                                   TextColor="#001F3F"/>
+                                        </VerticalStackLayout>
+                                    </VerticalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </RefreshView>
+</ContentPage>

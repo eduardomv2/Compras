@@ -62,15 +62,20 @@ public class PagosService
                 Cvv = cvv
             };
 
-            var cobrarResponse = await _http.PostAsJsonAsync(
-                "/api/pagos/cobrar", cobrarDto);
+            var cobrarResponse = await _http.PostAsJsonAsync("/api/pagos/cobrar", cobrarDto);
+
+            var contenidoLog = await cobrarResponse.Content.ReadAsStringAsync();
+            Console.WriteLine($"PagarCredito response: {cobrarResponse.StatusCode}, {contenidoLog}");
 
             if (cobrarResponse.IsSuccessStatusCode)
                 return (true, string.Empty);
 
-            var error = await cobrarResponse.Content
-                .ReadFromJsonAsync<ErrorPago>();
+            var error = System.Text.Json.JsonSerializer.Deserialize<ErrorPago>(
+                contenidoLog, new System.Text.Json.JsonSerializerOptions
+                { PropertyNameCaseInsensitive = true });
+
             return (false, error?.Error ?? "Pago rechazado.");
+
         }
         catch
         {

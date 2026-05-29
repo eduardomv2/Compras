@@ -11,7 +11,6 @@ namespace Compras;
 
 public static class MauiProgram
 {
-    // URL del Gateway — cambiar cuando estén en red local
     //public const string GatewayUrl = "https:/localhost:7007";
     public const string GatewayUrl = "http://10.0.2.2:5133";
 
@@ -45,6 +44,7 @@ public static class MauiProgram
         builder.Services.AddTransient<PagosService>();
         builder.Services.AddTransient<OrdenesService>();
         builder.Services.AddTransient<EnviosService>();
+        builder.Services.AddTransient<PromocionesService>();
 
 
         // ViewModels 
@@ -57,6 +57,10 @@ public static class MauiProgram
         builder.Services.AddTransient<MisPedidosViewModel>();
         builder.Services.AddTransient<CheckoutViewModel>();
         builder.Services.AddTransient<RastreoViewModel>();
+        builder.Services.AddTransient<InicioViewModel>();
+        builder.Services.AddTransient<CreditoViewModel>();
+
+
         // Vistas
         builder.Services.AddTransient<LoginPage>();
         builder.Services.AddTransient<CatalogoPage>();
@@ -66,6 +70,8 @@ public static class MauiProgram
         builder.Services.AddTransient<CheckoutPage>();    
         builder.Services.AddTransient<MisPedidosPage>();
         builder.Services.AddTransient<RastreoPage>();
+        builder.Services.AddTransient<InicioPage>();
+        builder.Services.AddTransient<CreditoPage>();
 
 
 #if DEBUG

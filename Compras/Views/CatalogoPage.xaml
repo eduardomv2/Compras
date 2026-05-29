@@ -69,7 +69,7 @@
                                            FontSize="13"
                                            TextColor="#001F3F"
                                            MaxLines="2"/>
-                                    <Label Text="{Binding Marca.Nombre}"
+                                    <Label Text="{Binding Marca}"
                                            FontSize="11"
                                            TextColor="#77777A"/>
                                     <Label Text="{Binding PrecioVenta, StringFormat='${0:N2}'}"

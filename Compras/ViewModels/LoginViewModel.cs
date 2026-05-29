@@ -20,7 +20,7 @@ public class LoginViewModel : BaseViewModel
             await Shell.Current.GoToAsync("RegistroPage"));
 
         EntrarComoInvitadoCommand = new Command(async () =>
-            await Shell.Current.GoToAsync("//CatalogoPageInvitado"));
+            await Shell.Current.GoToAsync("//InicioPageInvitado"));
     }
 
     private string _email = string.Empty;
@@ -59,7 +59,7 @@ public class LoginViewModel : BaseViewModel
         if (exito && usuario is not null)
         {
             _sesionService.IniciarSesion(usuario);
-            await Shell.Current.GoToAsync("//CatalogoPage");
+            await Shell.Current.GoToAsync("//InicioPage");
         }
         else
         {

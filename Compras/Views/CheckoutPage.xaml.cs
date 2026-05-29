@@ -8,5 +8,6 @@ public partial class CheckoutPage : ContentPage
     {
         InitializeComponent();
         BindingContext = vm;
+
     }
 }
