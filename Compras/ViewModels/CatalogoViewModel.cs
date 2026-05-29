@@ -18,10 +18,12 @@ public class CatalogoViewModel : BaseViewModel
             _filtroPromocion = value;
             OnPropertyChanged();
             if (!string.IsNullOrEmpty(value))
+            {
                 Busqueda = value;
+                FiltrarProductos();
+            }
         }
     }
-
     private readonly CatalogoService _catalogoService;
     private readonly CarritoService _carritoService;
 

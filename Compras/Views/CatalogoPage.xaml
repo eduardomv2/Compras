@@ -22,18 +22,23 @@
 
         <!-- Categorías -->
         <CollectionView Grid.Row="1"
-                        ItemsSource="{Binding Categorias}"
-                        HeightRequest="50"
-                        Margin="8,8,8,0">
+                ItemsSource="{Binding Categorias}"
+                HeightRequest="50"
+                Margin="8,8,8,0">
             <CollectionView.ItemsLayout>
                 <LinearItemsLayout Orientation="Horizontal" ItemSpacing="8"/>
             </CollectionView.ItemsLayout>
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:CategoriaDto">
                     <Frame BackgroundColor="#001F3F" CornerRadius="20"
-                           Padding="16,6" HasShadow="False">
+                   Padding="16,6" HasShadow="False">
+                        <Frame.GestureRecognizers>
+                            <TapGestureRecognizer
+                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CatalogoViewModel}}, Path=FiltrarPorCategoriaCommand}"
+                        CommandParameter="{Binding .}"/>
+                        </Frame.GestureRecognizers>
                         <Label Text="{Binding Nombre}" TextColor="White"
-                               FontSize="13" VerticalOptions="Center"/>
+                       FontSize="13" VerticalOptions="Center"/>
                     </Frame>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
