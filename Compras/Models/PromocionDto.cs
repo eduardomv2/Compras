@@ -8,5 +8,7 @@ public class PromocionDto
     public decimal MontoMinimoCompra { get; set; }
     public bool EstaVigente { get; set; }
     public string TextoDescuento => $"{PorcentajeDescuento:0}% OFF";
-    public string TextoMinimo => $"En compras mayores a ${MontoMinimoCompra:N0}";
+    public string TextoMinimo => MontoMinimoCompra > 0
+        ? $"En compras mayores a ${MontoMinimoCompra:N0}"
+        : "En todos los productos";
 }

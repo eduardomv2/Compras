@@ -11,6 +11,8 @@ public class CreditoDto
     public decimal InteresesMensuales { get; set; }
     public int TotalCompras { get; set; }
     public string FechaApertura { get; set; } = string.Empty;
+    public decimal PagoMinimo => Math.Round(SaldoUsado / 12, 2);
+    public decimal TotalMensual => PagoMinimo + InteresesMensuales;
 }
 
 public class ResultadoCreditoDto

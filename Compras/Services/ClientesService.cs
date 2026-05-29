@@ -184,6 +184,41 @@ public class ClientesService
             return (false, string.Empty, "No se pudo conectar al servidor.");
         }
     }
+
+    public async Task RegistrarCompraDebitoAsync(int idUsuario, decimal monto)
+    {
+        try
+        {
+            var dto = new { Monto = monto };
+            await _http.PatchAsJsonAsync(
+                $"/api/clientes/{idUsuario}/compras/registrar", dto);
+        }
+        catch { }
+    }
+
+    public async Task<(bool Exito, string Mensaje, string Error)> RevisarTasaCreditoAsync(
+    int idUsuario)
+    {
+        try
+        {
+            var response = await _http.PostAsJsonAsync(
+                $"/api/clientes/{idUsuario}/credito/revisar-tasa", new { });
+
+            if (response.IsSuccessStatusCode)
+            {
+                var resultado = await response.Content
+                    .ReadFromJsonAsync<ResultadoCreditoDto>();
+                return (true, resultado?.Mensaje ?? "Tasa actualizada.", string.Empty);
+            }
+
+            var error = await response.Content.ReadFromJsonAsync<ErrorDto>();
+            return (false, string.Empty, error?.Error ?? "Error al revisar tasa.");
+        }
+        catch
+        {
+            return (false, string.Empty, "No se pudo conectar al servidor.");
+        }
+    }
 }
 
 public record ErrorDto(string? Error, string[]? Errores);

@@ -55,9 +55,10 @@
                         <Frame BackgroundColor="White" CornerRadius="12"
                                Padding="0" HasShadow="True">
                             <Frame.GestureRecognizers>
-                                <TapGestureRecognizer
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CatalogoViewModel}}, Path=VerProductoCommand}"
-                                    CommandParameter="{Binding .}"/>
+                                <TapGestureRecognizer 
+                                 Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CatalogoViewModel}}, Path=FiltrarPorCategoriaCommand}"
+                                 CommandParameter="{Binding .}"/>
+
                             </Frame.GestureRecognizers>
                             <VerticalStackLayout>
                                 <Image Source="{Binding ImagenPortada}"

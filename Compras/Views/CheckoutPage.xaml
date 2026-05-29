@@ -107,8 +107,8 @@
 
                         <!-- Crédito -->
                         <Border StrokeThickness="2"
-                StrokeShape="RoundRectangle 8"
-                Padding="12">
+        StrokeShape="RoundRectangle 8"
+        Padding="12">
                             <Border.Stroke>
                                 <Binding Path="EsCredito">
                                     <Binding.Converter>
@@ -123,76 +123,19 @@
                                 <HorizontalStackLayout Spacing="12">
                                     <Label Text="🏦" FontSize="24"/>
                                     <VerticalStackLayout VerticalOptions="Center">
-                                        <Label Text="Crédito" FontAttributes="Bold"
-                               TextColor="#001F3F" FontSize="15"/>
+                                        <Label Text="Crédito tienda" FontAttributes="Bold"
+                       TextColor="#001F3F" FontSize="15"/>
                                         <Label Text="{Binding CreditoDisponibleTexto}"
-                               TextColor="#77777A" FontSize="12"/>
+                       TextColor="#77777A" FontSize="12"/>
                                     </VerticalStackLayout>
                                 </HorizontalStackLayout>
-
-                                <!-- MSI selector solo cuando es crédito -->
-                                <VerticalStackLayout IsVisible="{Binding EsCredito}" Spacing="8">
-                                    <Label Text="Meses sin intereses"
-                           TextColor="#77777A" FontSize="13"/>
-                                    <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
-                                        <Border Grid.Column="0" StrokeThickness="2"
-                                StrokeShape="RoundRectangle 8" Padding="8,10">
-                                            <Border.Stroke>
-                                                <Binding Path="Meses3Seleccionado">
-                                                    <Binding.Converter>
-                                                        <converters:BoolToColorConverter/>
-                                                    </Binding.Converter>
-                                                </Binding>
-                                            </Border.Stroke>
-                                            <Border.GestureRecognizers>
-                                                <TapGestureRecognizer Command="{Binding SeleccionarMesesCommand}"
-                                                      CommandParameter="3"/>
-                                            </Border.GestureRecognizers>
-                                            <Label Text="3 MSI" HorizontalOptions="Center"
-                                   FontAttributes="Bold" TextColor="#001F3F"/>
-                                        </Border>
-                                        <Border Grid.Column="1" StrokeThickness="2"
-                                StrokeShape="RoundRectangle 8" Padding="8,10">
-                                            <Border.Stroke>
-                                                <Binding Path="Meses6Seleccionado">
-                                                    <Binding.Converter>
-                                                        <converters:BoolToColorConverter/>
-                                                    </Binding.Converter>
-                                                </Binding>
-                                            </Border.Stroke>
-                                            <Border.GestureRecognizers>
-                                                <TapGestureRecognizer Command="{Binding SeleccionarMesesCommand}"
-                                                      CommandParameter="6"/>
-                                            </Border.GestureRecognizers>
-                                            <Label Text="6 MSI" HorizontalOptions="Center"
-                                   FontAttributes="Bold" TextColor="#001F3F"/>
-                                        </Border>
-                                        <Border Grid.Column="2" StrokeThickness="2"
-                                StrokeShape="RoundRectangle 8" Padding="8,10">
-                                            <Border.Stroke>
-                                                <Binding Path="Meses12Seleccionado">
-                                                    <Binding.Converter>
-                                                        <converters:BoolToColorConverter/>
-                                                    </Binding.Converter>
-                                                </Binding>
-                                            </Border.Stroke>
-                                            <Border.GestureRecognizers>
-                                                <TapGestureRecognizer Command="{Binding SeleccionarMesesCommand}"
-                                                      CommandParameter="12"/>
-                                            </Border.GestureRecognizers>
-                                            <Label Text="12 MSI" HorizontalOptions="Center"
-                                   FontAttributes="Bold" TextColor="#001F3F"/>
-                                        </Border>
-                                    </Grid>
-                                </VerticalStackLayout>
-
+                                <Label Text="Pago a 12 meses • Próximamente MSI disponibles"
+               TextColor="#77777A" FontSize="11"
+               IsVisible="{Binding EsCredito}"/>
                             </VerticalStackLayout>
                         </Border>
 
-                    </VerticalStackLayout>
-                </Border>
-
-                <!-- Error -->
+                        <!-- Error -->
                 <Label Text="{Binding ErrorMensaje}"
                        TextColor="#E3122B"
                        IsVisible="{Binding ErrorMensaje, Converter={StaticResource StringToBoolConverter}}"
@@ -203,7 +146,10 @@
                                    Color="#001F3F"/>
 
             </VerticalStackLayout>
-        </ScrollView>
+        </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
 
         <!-- Botón pagar -->
         <Button Grid.Row="1"

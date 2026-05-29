@@ -14,7 +14,6 @@ public class InicioViewModel : BaseViewModel
     public ObservableCollection<PromocionDto> Promociones { get; } = [];
     public ObservableCollection<CategoriaDto> Categorias { get; } = [];
     public ObservableCollection<ProductoDto> Destacados { get; } = [];
-
     public ObservableCollection<CategoriaDto> CategoriasDestacadas { get; } = [];
 
     public InicioViewModel(
@@ -32,20 +31,30 @@ public class InicioViewModel : BaseViewModel
                 nameof(Views.ProductoDetallePage),
                 new Dictionary<string, object> { ["Producto"] = p }));
 
-
         VerCatalogoCommand = new Command(async () =>
-        {
-            // Navegar al tab de Catálogo sin salir del TabBar
-            var shell = Shell.Current;
-            await shell.GoToAsync("//CatalogoPage");
-        });
+            await Shell.Current.GoToAsync("//CatalogoPage"));
+
+        VerPromocionCommand = new Command<PromocionDto>(async promo =>
+            await Shell.Current.GoToAsync(
+                "//CatalogoPage",
+                new Dictionary<string, object> { ["FiltroPromocion"] = promo.NombreCampana }));
 
         CargarCommand = new Command(async () => await CargarAsync());
         CargarCommand.Execute(null);
     }
 
+    private int _promocionActual = 0;
+    private IDispatcherTimer? _timer;
+
+    public int PromocionActual
+    {
+        get => _promocionActual;
+        set { _promocionActual = value; OnPropertyChanged(); }
+    }
+
     public ICommand VerProductoCommand { get; }
     public ICommand VerCatalogoCommand { get; }
+    public ICommand VerPromocionCommand { get; }
     public Command CargarCommand { get; }
 
     private async Task CargarAsync()
@@ -53,13 +62,23 @@ public class InicioViewModel : BaseViewModel
         if (IsBusy) return;
         IsBusy = true;
 
-        // Cargar promociones
         var promociones = await _promocionesService.GetPromocionesActivasAsync();
         Promociones.Clear();
         foreach (var p in promociones.Take(5))
             Promociones.Add(p);
 
-        // Cargar categorías
+        _timer?.Stop();
+        if (Promociones.Count > 1)
+        {
+            _timer = Application.Current!.Dispatcher.CreateTimer();
+            _timer.Interval = TimeSpan.FromSeconds(3);
+            _timer.Tick += (s, e) =>
+            {
+                PromocionActual = (PromocionActual + 1) % Promociones.Count;
+            };
+            _timer.Start();
+        }
+
         var categorias = await _catalogoService.GetCategoriasAsync();
         Categorias.Clear();
         CategoriasDestacadas.Clear();
@@ -68,7 +87,6 @@ public class InicioViewModel : BaseViewModel
         foreach (var c in categorias.Take(4))
             CategoriasDestacadas.Add(c);
 
-        // Cargar destacados en paralelo
         var tareaDestacados = _ordenesService.GetProductosMasVendidosAsync();
         var tareaProductos = _catalogoService.GetProductosAsync();
         await Task.WhenAll(tareaDestacados, tareaProductos);

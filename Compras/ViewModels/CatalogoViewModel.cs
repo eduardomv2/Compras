@@ -6,8 +6,22 @@ using Compras.Views;
 
 namespace Compras.ViewModels;
 
+[QueryProperty(nameof(FiltroPromocion), "FiltroPromocion")]
 public class CatalogoViewModel : BaseViewModel
 {
+    private string _filtroPromocion = string.Empty;
+    public string FiltroPromocion
+    {
+        get => _filtroPromocion;
+        set
+        {
+            _filtroPromocion = value;
+            OnPropertyChanged();
+            if (!string.IsNullOrEmpty(value))
+                Busqueda = value;
+        }
+    }
+
     private readonly CatalogoService _catalogoService;
     private readonly CarritoService _carritoService;
 
@@ -18,19 +32,24 @@ public class CatalogoViewModel : BaseViewModel
     {
         _catalogoService = catalogoService;
         _carritoService = carritoService;
-        Titulo = "Catálogo";           
+        Titulo = "Catálogo";
 
         CargarCommand = new Command(async () => await CargarAsync());
         VerProductoCommand = new Command<ProductoDto>(async p =>
             await Shell.Current.GoToAsync(
                 nameof(ProductoDetallePage),
                 new Dictionary<string, object> { ["Producto"] = p }));
+        FiltrarPorCategoriaCommand = new Command<CategoriaDto>(categoria =>
+        {
+            Busqueda = categoria.Nombre;
+        });
 
         CargarCommand.Execute(null);
     }
 
     public Command CargarCommand { get; }
     public ICommand VerProductoCommand { get; }
+    public ICommand FiltrarPorCategoriaCommand { get; }
 
     private string _busqueda = string.Empty;
     public string Busqueda
@@ -55,13 +74,12 @@ public class CatalogoViewModel : BaseViewModel
         var categorias = await _catalogoService.GetCategoriasAsync();
 
         _todosLosProductos = productos;
-
         Productos.Clear();
         foreach (var p in productos)
             Productos.Add(p);
 
         Categorias.Clear();
-        foreach (var c in categorias)
+        foreach (var c in categorias.DistinctBy(c => c.Nombre))
             Categorias.Add(c);
 
         IsBusy = false;

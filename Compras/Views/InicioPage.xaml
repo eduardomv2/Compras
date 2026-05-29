@@ -22,31 +22,32 @@
 
                 <!-- Carrusel de promociones -->
                 <VerticalStackLayout Margin="0,12,0,0">
-                    <CarouselView ItemsSource="{Binding Promociones}"
+                    <CarouselView x:Name="carruselPromociones"
+                                  ItemsSource="{Binding Promociones}"
                                   HeightRequest="160"
-                                  Loop="True">
+                                  Loop="True"
+                                  IndicatorView="indicador">
                         <CarouselView.ItemTemplate>
                             <DataTemplate x:DataType="models:PromocionDto">
-                                <Border Margin="16,0"
-                                        BackgroundColor="#001F3F"
-                                        StrokeThickness="0"
-                                        StrokeShape="RoundRectangle 16">
+                                <Border Margin="16,0" BackgroundColor="#001F3F"
+                StrokeThickness="0" StrokeShape="RoundRectangle 16">
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer
+                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:InicioViewModel}}, Path=VerPromocionCommand}"
+                    CommandParameter="{Binding .}"/>
+                                    </Border.GestureRecognizers>
                                     <Grid ColumnDefinitions="*,Auto" Padding="20">
-                                        <VerticalStackLayout Grid.Column="0"
-                                                             VerticalOptions="Center"
-                                                             Spacing="8">
+                                        <VerticalStackLayout Grid.Column="0" VerticalOptions="Center" Spacing="8">
                                             <Label Text="{Binding TextoDescuento}"
-                                                   FontSize="36" FontAttributes="Bold"
-                                                   TextColor="#FFD700"/>
+                           FontSize="36" FontAttributes="Bold" TextColor="#FFD700"/>
                                             <Label Text="{Binding NombreCampana}"
-                                                   FontSize="16" TextColor="White"
-                                                   FontAttributes="Bold"/>
+                           FontSize="16" TextColor="White" FontAttributes="Bold"/>
                                             <Label Text="{Binding TextoMinimo}"
-                                                   FontSize="12" TextColor="#B0BEC5"/>
+                           FontSize="12" TextColor="#B0BEC5"/>
+                                            <Label Text="Ver productos →"
+                           FontSize="12" TextColor="#FFD700"/>
                                         </VerticalStackLayout>
-                                        <Label Grid.Column="1" Text="🏷️"
-                                               FontSize="48"
-                                               VerticalOptions="Center"/>
+                                        <Label Grid.Column="1" Text="🏷️" FontSize="48" VerticalOptions="Center"/>
                                     </Grid>
                                 </Border>
                             </DataTemplate>

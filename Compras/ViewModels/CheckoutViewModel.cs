@@ -17,13 +17,13 @@ public class CheckoutViewModel : BaseViewModel
     private CreditoDto? _credito;
 
     public CheckoutViewModel(
-        CarritoService carritoService,
-        SesionService sesionService,
-        PagosService pagosService,
-        OrdenesService ordenesService,
-        EnviosService enviosService,
-        ClientesService clientesService,
-        CatalogoService catalogoService)
+      CarritoService carritoService,
+      SesionService sesionService,
+      PagosService pagosService,
+      OrdenesService ordenesService,
+      EnviosService enviosService,
+      ClientesService clientesService,
+      CatalogoService catalogoService)
     {
         _carritoService = carritoService;
         _sesionService = sesionService;
@@ -34,26 +34,23 @@ public class CheckoutViewModel : BaseViewModel
         _catalogoService = catalogoService;
         Titulo = "Checkout";
 
+        _ = CargarCreditoAsync();
+
         PagarCommand = new Command(async () => await PagarAsync());
-
         SeleccionarDebitoCommand = new Command(() => EsDebito = true);
-
-        SeleccionarCreditoCommand = new Command(async () =>
-        {
-            EsDebito = false;
-            if (_credito is null)
-            {
-                _credito = await _clientesService.GetCreditoAsync(
-                    _sesionService.UsuarioActual?.Id ?? 0);
-                OnPropertyChanged(nameof(CreditoDisponibleTexto));
-            }
-        });
-
+        SeleccionarCreditoCommand = new Command(() => EsDebito = false);
         SeleccionarMesesCommand = new Command<string>(meses =>
         {
             if (int.TryParse(meses, out var m))
                 MesesSinIntereses = m;
         });
+    }
+
+    private async Task CargarCreditoAsync()
+    {
+        _credito = await _clientesService.GetCreditoAsync(
+            _sesionService.UsuarioActual?.Id ?? 0);
+        OnPropertyChanged(nameof(CreditoDisponibleTexto));
     }
 
     // ── Datos de tarjeta ──────────────────────────────────────────
@@ -120,12 +117,14 @@ public class CheckoutViewModel : BaseViewModel
         }
     }
 
+
+
     public bool Meses3Seleccionado => MesesSinIntereses == 3;
     public bool Meses6Seleccionado => MesesSinIntereses == 6;
     public bool Meses12Seleccionado => MesesSinIntereses == 12;
 
     public string CreditoDisponibleTexto => _credito is null
-        ? "Cargando..."
+        ? "Sin crédito disponible"
         : $"Disponible: ${_credito.CreditoDisponible:N2}";
 
     // ── Error ─────────────────────────────────────────────────────
@@ -169,6 +168,7 @@ public class CheckoutViewModel : BaseViewModel
         if (EsCredito)
         {
             _credito ??= await _clientesService.GetCreditoAsync(usuario.Id);
+            Console.WriteLine($"Crédito: {_credito?.CreditoDisponible}, Total: {Total}");
             if (_credito is null || _credito.CreditoDisponible < Total)
             {
                 ErrorMensaje = $"Crédito insuficiente. Disponible: ${_credito?.CreditoDisponible:N2}";
@@ -205,10 +205,10 @@ public class CheckoutViewModel : BaseViewModel
             return;
         }
 
+
         // 2. Procesar el pago
         if (EsDebito)
         {
-            // Pago con tarjeta via OpenPay
             var (pagoExito, pagoError) = await _pagosService.ProcesarPagoAsync(
                 usuario.Id,
                 NumeroTarjeta, NombreTarjeta,
@@ -228,7 +228,7 @@ public class CheckoutViewModel : BaseViewModel
             var (creditoExito, mensajeCredito, errorCredito) =
                 await _clientesService.RegistrarCompraCredito(
                     usuario.Id, Total,
-                    $"Compra orden #{idOrden} a {MesesSinIntereses} MSI");
+                    $"Compra orden #{idOrden}");
 
             if (!creditoExito)
             {
@@ -240,6 +240,10 @@ public class CheckoutViewModel : BaseViewModel
             if (!string.IsNullOrEmpty(mensajeCredito))
                 await Shell.Current.DisplayAlert("Crédito", mensajeCredito, "OK");
         }
+
+        // 3. Registrar compra con débito para historial de crédito
+        if (EsDebito)
+            await _clientesService.RegistrarCompraDebitoAsync(usuario.Id, Total);
 
         // 4. Descontar stock
         foreach (var item in _carritoService.Items.ToList())
@@ -256,7 +260,7 @@ public class CheckoutViewModel : BaseViewModel
             "¡Pago exitoso!",
             $"Tu pedido #{idOrden} ha sido procesado.", "OK");
         await Shell.Current.GoToAsync("//MisPedidosPage");
-
         IsBusy = false;
     }
+    
 }

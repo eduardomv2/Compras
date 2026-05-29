@@ -11,6 +11,11 @@ public partial class InicioPage : ContentPage
         InitializeComponent();
         BindingContext = vm;
         _vm = vm;
+        _vm.PropertyChanged += (s, e) =>
+        {
+            if (e.PropertyName == nameof(InicioViewModel.PromocionActual))
+                carruselPromociones.ScrollTo(_vm.PromocionActual);
+        };
     }
 
     protected override async void OnAppearing()

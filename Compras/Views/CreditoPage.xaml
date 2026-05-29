@@ -77,30 +77,86 @@
 
                     <!-- Pagar crédito -->
                     <Border BackgroundColor="White" StrokeThickness="0"
-                            StrokeShape="RoundRectangle 12" Padding="16"
-                            IsVisible="{Binding TieneSaldo}">
+        StrokeShape="RoundRectangle 12" Padding="16"
+        IsVisible="{Binding TieneSaldo}">
                         <VerticalStackLayout Spacing="12">
                             <Label Text="Realizar pago" FontAttributes="Bold"
-                                   FontSize="16" TextColor="#001F3F"/>
-                            <Label Text="{Binding Credito.InteresesAcumulados, StringFormat='Intereses acumulados: ${0:N2}'}"
-                                   TextColor="#E3122B" FontSize="13"/>
+               FontSize="16" TextColor="#001F3F"/>
+
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                <Label Grid.Column="0"
+                   Text="{Binding Credito.InteresesAcumulados, StringFormat='Intereses acumulados: ${0:N2}'}"
+                   TextColor="#E3122B" FontSize="13"
+                   VerticalOptions="Center"/>
+                                <Button Grid.Column="1"
+                    Text="Pago mínimo"
+                    Command="{Binding UsarPagoMinimoCommand}"
+                    BackgroundColor="#F2F2F2"
+                    TextColor="#001F3F"
+                    FontSize="12"
+                    HeightRequest="36"
+                    CornerRadius="8"/>
+                            </Grid>
+
+                            <Label Text="{Binding Credito.PagoMinimo, StringFormat='Pago mínimo: ${0:N2}'}"
+       TextColor="#77777A" FontSize="12"/>
+                            <Label Text="{Binding Credito.TotalMensual, StringFormat='Total este mes (con intereses): ${0:N2}'}"
+       TextColor="#001F3F" FontSize="13" FontAttributes="Bold"/>
+
                             <Entry Placeholder="Monto a pagar"
-                                   Text="{Binding MontoPago}"
-                                   Keyboard="Numeric"
-                                   HeightRequest="52"/>
-                            <Label Text="{Binding ErrorMensaje}"
-                                   TextColor="#E3122B"
-                                   IsVisible="{Binding ErrorMensaje, Converter={StaticResource StringToBoolConverter}}"/>
-                            <Button Text="PAGAR"
-                                    Command="{Binding PagarCommand}"
-                                    BackgroundColor="#001F3F"
-                                    TextColor="White"
-                                    FontAttributes="Bold"
-                                    HeightRequest="52"
-                                    CornerRadius="8"/>
+               Text="{Binding MontoPago}"
+               Keyboard="Numeric"
+               HeightRequest="52"/>
+
+                            <!-- Botón para mostrar formulario -->
+                            <Button Text="CONTINUAR AL PAGO"
+                Command="{Binding MostrarPagoCommand}"
+                IsVisible="{Binding MostrarFormularioPago, Converter={StaticResource InvertBoolConverter}}"
+                BackgroundColor="#001F3F" TextColor="White"
+                FontAttributes="Bold" HeightRequest="52" CornerRadius="8"/>
+
+                            <!-- Formulario de tarjeta oculto hasta que se pique continuar -->
+                            <VerticalStackLayout IsVisible="{Binding MostrarFormularioPago}" Spacing="12">
+                                <Label Text="Datos de tarjeta para el pago"
+                   FontAttributes="Bold" TextColor="#001F3F" FontSize="14"/>
+
+                                <Entry Placeholder="Número de tarjeta"
+                   Text="{Binding NumeroTarjeta}"
+                   Keyboard="Numeric" MaxLength="16"
+                   HeightRequest="52"/>
+
+                                <Entry Placeholder="Nombre del titular"
+                   Text="{Binding NombreTarjeta}"
+                   HeightRequest="52"/>
+
+                                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                                    <Entry Grid.Column="0" Placeholder="MM"
+                       Text="{Binding MesExpiracion}"
+                       Keyboard="Numeric" MaxLength="2"
+                       HeightRequest="52"/>
+                                    <Entry Grid.Column="1" Placeholder="AA"
+                       Text="{Binding AnioExpiracion}"
+                       Keyboard="Numeric" MaxLength="2"
+                       HeightRequest="52"/>
+                                    <Entry Grid.Column="2" Placeholder="CVV"
+                       Text="{Binding Cvv}"
+                       IsPassword="True"
+                       Keyboard="Numeric" MaxLength="4"
+                       HeightRequest="52"/>
+                                </Grid>
+
+                                <Label Text="{Binding ErrorMensaje}"
+                   TextColor="#E3122B"
+                   IsVisible="{Binding ErrorMensaje, Converter={StaticResource StringToBoolConverter}}"/>
+
+                                <Button Text="PAGAR CRÉDITO"
+                    Command="{Binding PagarCommand}"
+                    BackgroundColor="#001F3F" TextColor="White"
+                    FontAttributes="Bold" HeightRequest="52" CornerRadius="8"/>
+                            </VerticalStackLayout>
+
                         </VerticalStackLayout>
                     </Border>
-
                     <!-- Historial -->
                     <VerticalStackLayout Spacing="8">
                         <Label Text="Historial de movimientos"
